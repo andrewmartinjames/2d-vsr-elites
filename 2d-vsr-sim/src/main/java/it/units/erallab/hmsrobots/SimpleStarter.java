@@ -28,6 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.dyn4j.dynamics.Settings;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,11 +50,15 @@ public class SimpleStarter {
                 Grid.create(structure, b -> b ? new ControllableVoxel() : null)
         );
 
+
+        List<Locomotion.Metric> metrics = Lists.newArrayList(Locomotion.Metric.CENTER_AVG_Y);
+        metrics.add(Locomotion.Metric.TOTAL_Y_CHANGE);
+        metrics.add(Locomotion.Metric.ABSOLUTE_Theta_CHANGE);
         //episode
         Locomotion locomotion = new Locomotion(
                 60,
                 Locomotion.createTerrain("uneven5"),
-                Lists.newArrayList(Locomotion.Metric.TRAVEL_X_VELOCITY),
+                metrics,
                 settings
         );
         Grid<Pair<String, Robot>> namedSolutionGrid = Grid.create(1, 1);

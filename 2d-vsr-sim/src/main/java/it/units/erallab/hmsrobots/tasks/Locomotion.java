@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Eric Medvet <eric.medvet@gmail.com> (as eric)
+ * Copyright (C) 2020 Eric Medvet <eric.medvet@gmail.com> (as alikhan4812)
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -42,6 +42,9 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
   private final static int TERRAIN_POINTS = 50;
 
   public enum Metric {
+      TOTAL_Y_CHANGE(false),
+      ABSOLUTE_Theta_CHANGE(false),
+      X_DISPLACEMENT(false),
     TRAVEL_X_VELOCITY(false),
     TRAVEL_X_RELATIVE_VELOCITY(false),
     CENTER_AVG_Y(true),
@@ -115,11 +118,21 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
         listener.listen(snapshot);
       }
     }
+
     //compute metrics
     List<Double> results = new ArrayList<>(metrics.size());
     for (Metric metric : metrics) {
       double value = Double.NaN;
       switch (metric) {
+          case ABSOLUTE_Theta_CHANGE:
+              value = deltaTheta(centerPositions);
+              break;
+          case TOTAL_Y_CHANGE:
+              value = deltaY(centerPositions);
+              break;
+          case X_DISPLACEMENT:
+              value = (robot.getCenter().x - initCenterX);
+              break;
         case TRAVEL_X_VELOCITY:
           value = (robot.getCenter().x - initCenterX) / t;
           break;
@@ -139,7 +152,6 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
               .sum() / t;
           break;
         case RELATIVE_CONTROL_POWER:
-
           value = robot.getVoxels().values().stream()
               .filter(v -> (v != null) && (v instanceof ControllableVoxel))
               .mapToDouble(v -> ((ControllableVoxel) v).getControlEnergy())
@@ -150,6 +162,34 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
     }
     return results;
   }
+
+    private static double deltaTheta(List<Point2> centerPositions) {
+        double[] thetaList = centerPositions.stream().mapToDouble((p) -> Math.atan(p.y / p.x)).toArray();
+        double previous = thetaList[0];
+        double value = 0;
+        for (double c : thetaList
+        ) {
+            value = value + Math.abs(c - previous);
+            previous = c;
+        }
+        return value;
+
+    }
+
+
+    private static double deltaY(List<Point2> centerPositions) {
+        double[] yList = centerPositions.stream().mapToDouble((p) -> p.y).toArray();
+        double previous = yList[0];
+        double value = 0;
+        for (double c : yList
+        ) {
+            value = value + Math.abs(c - previous);
+            previous = c;
+        }
+        return value;
+
+    }
+
 
   private static double[][] randomTerrain(int n, double length, double peak, double borderHeight, Random random) {
     double[] xs = new double[n + 2];
