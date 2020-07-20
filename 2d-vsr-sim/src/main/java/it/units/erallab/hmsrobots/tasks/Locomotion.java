@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Eric Medvet <eric.medvet@gmail.com> (as alikhan4812)
+ * Copyright (C) 2020 Eric Medvet <eric.medvet@gmail.com> (as eric)
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import it.units.erallab.hmsrobots.core.objects.Ground;
 import it.units.erallab.hmsrobots.core.objects.Robot;
 import it.units.erallab.hmsrobots.core.objects.WorldObject;
 import it.units.erallab.hmsrobots.core.objects.immutable.Snapshot;
+import it.units.erallab.hmsrobots.core.objects.immutable.Voxel;
 import it.units.erallab.hmsrobots.util.BoundingBox;
 import it.units.erallab.hmsrobots.util.Grid;
 import it.units.erallab.hmsrobots.util.Point2;
@@ -31,10 +32,11 @@ import org.dyn4j.geometry.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class Locomotion extends AbstractTask<Robot, List<Double>> {
+public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
 
   private final static double INITIAL_PLACEMENT_X_GAP = 1d;
   private final static double INITIAL_PLACEMENT_Y_GAP = 1d;
@@ -42,9 +44,6 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
   private final static int TERRAIN_POINTS = 50;
 
   public enum Metric {
-      TOTAL_Y_CHANGE(false),
-      ABSOLUTE_Theta_CHANGE(false),
-      X_DISPLACEMENT(false),
     TRAVEL_X_VELOCITY(false),
     TRAVEL_X_RELATIVE_VELOCITY(false),
     CENTER_AVG_Y(true),
@@ -65,17 +64,23 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
 
   private final double finalT;
   private final double[][] groundProfile;
+  private final double initialPlacement;
   private final List<Metric> metrics;
 
   public Locomotion(double finalT, double[][] groundProfile, List<Metric> metrics, Settings settings) {
+    this(finalT, groundProfile, groundProfile[0][1] + INITIAL_PLACEMENT_X_GAP, metrics, settings);
+  }
+
+  public Locomotion(double finalT, double[][] groundProfile, double initialPlacement, List<Metric> metrics, Settings settings) {
     super(settings);
     this.finalT = finalT;
     this.groundProfile = groundProfile;
+    this.initialPlacement = initialPlacement;
     this.metrics = metrics;
   }
 
   @Override
-  public List<Double> apply(Robot robot, SnapshotListener listener) {
+  public List<Double> apply(Robot<?> robot, SnapshotListener listener) {
     List<Point2> centerPositions = new ArrayList<>();
     //init world
     World world = new World();
@@ -84,17 +89,15 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
     Ground ground = new Ground(groundProfile[0], groundProfile[1]);
     ground.addTo(world);
     worldObjects.add(ground);
-    //position robot: x of rightmost point is on 2nd point of profile
+    //position robot: translate on x
     BoundingBox boundingBox = robot.boundingBox();
-    double xLeft = groundProfile[0][1] + INITIAL_PLACEMENT_X_GAP;
-    double yGroundLeft = groundProfile[1][1];
-    double xRight = xLeft + boundingBox.max.x - boundingBox.min.x;
-    double yGroundRight = yGroundLeft + (groundProfile[1][2] - yGroundLeft) * (xRight - xLeft) / (groundProfile[0][2] - xLeft);
-    double topmostGroundY = Math.max(yGroundLeft, yGroundRight);
-    Vector2 targetPoint = new Vector2(xLeft, topmostGroundY + INITIAL_PLACEMENT_Y_GAP);
-    Vector2 currentPoint = new Vector2(boundingBox.min.x, boundingBox.min.y);
-    Vector2 movement = targetPoint.subtract(currentPoint);
-    robot.translate(movement);
+    robot.translate(new Vector2(initialPlacement - boundingBox.min.x, 0));
+    //translate on y
+    double minYGap = robot.getVoxels().values().stream()
+        .filter(Objects::nonNull)
+        .mapToDouble(v -> ((Voxel) v.immutable()).getShape().boundingBox().min.y - ground.yAt(v.getCenter().x))
+        .min().orElse(0d);
+    robot.translate(new Vector2(0, INITIAL_PLACEMENT_Y_GAP - minYGap));
     //get initial x
     double initCenterX = robot.getCenter().x;
     //add robot to world
@@ -118,21 +121,11 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
         listener.listen(snapshot);
       }
     }
-
     //compute metrics
     List<Double> results = new ArrayList<>(metrics.size());
     for (Metric metric : metrics) {
       double value = Double.NaN;
       switch (metric) {
-          case ABSOLUTE_Theta_CHANGE:
-              value = deltaTheta(centerPositions);
-              break;
-          case TOTAL_Y_CHANGE:
-              value = deltaY(centerPositions);
-              break;
-          case X_DISPLACEMENT:
-              value = (robot.getCenter().x - initCenterX);
-              break;
         case TRAVEL_X_VELOCITY:
           value = (robot.getCenter().x - initCenterX) / t;
           break;
@@ -148,13 +141,13 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
         case CONTROL_POWER:
           value = robot.getVoxels().values().stream()
               .filter(v -> (v != null) && (v instanceof ControllableVoxel))
-              .mapToDouble(v -> ((ControllableVoxel) v).getControlEnergy())
+              .mapToDouble(v -> v.getControlEnergy())
               .sum() / t;
           break;
         case RELATIVE_CONTROL_POWER:
           value = robot.getVoxels().values().stream()
               .filter(v -> (v != null) && (v instanceof ControllableVoxel))
-              .mapToDouble(v -> ((ControllableVoxel) v).getControlEnergy())
+              .mapToDouble(v -> v.getControlEnergy())
               .sum() / t / robot.getVoxels().values().stream().filter(v -> (v != null)).count();
           break;
       }
@@ -162,34 +155,6 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
     }
     return results;
   }
-
-    private static double deltaTheta(List<Point2> centerPositions) {
-        double[] thetaList = centerPositions.stream().mapToDouble((p) -> Math.atan(p.y / p.x)).toArray();
-        double previous = thetaList[0];
-        double value = 0;
-        for (double c : thetaList
-        ) {
-            value = value + Math.abs(c - previous);
-            previous = c;
-        }
-        return value;
-
-    }
-
-
-    private static double deltaY(List<Point2> centerPositions) {
-        double[] yList = centerPositions.stream().mapToDouble((p) -> p.y).toArray();
-        double previous = yList[0];
-        double value = 0;
-        for (double c : yList
-        ) {
-            value = value + Math.abs(c - previous);
-            previous = c;
-        }
-        return value;
-
-    }
-
 
   private static double[][] randomTerrain(int n, double length, double peak, double borderHeight, Random random) {
     double[] xs = new double[n + 2];
@@ -216,4 +181,7 @@ public class Locomotion extends AbstractTask<Robot, List<Double>> {
     return null;
   }
 
+  public List<Metric> getMetrics() {
+    return metrics;
+  }
 }

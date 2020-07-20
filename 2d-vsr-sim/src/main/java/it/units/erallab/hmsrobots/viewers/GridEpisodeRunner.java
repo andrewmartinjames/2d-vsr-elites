@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  */
 public class GridEpisodeRunner<S> implements Runnable {
 
-  static {
+  /*static {
     try {
       LogManager.getLogManager().readConfiguration(GridEpisodeRunner.class.getClassLoader().getResourceAsStream("logging.properties"));
     } catch (IOException ex) {
@@ -46,7 +46,7 @@ public class GridEpisodeRunner<S> implements Runnable {
       //ignore
     }
   }
-
+*/
   private final Grid<Pair<String, S>> namedSolutionGrid;
   private final Task<S, ?> episode;
 
