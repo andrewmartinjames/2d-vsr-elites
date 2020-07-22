@@ -21,7 +21,7 @@ package it.units.erallab.hmsrobots.viewers;
  * @author Eric Medvet <eric.medvet@gmail.com>
  */
 public interface GridSnapshotListener {
-  
+
   SnapshotListener listener(int x, int y);
-  
+
 }
