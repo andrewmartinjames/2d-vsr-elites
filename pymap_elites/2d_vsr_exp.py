@@ -1,7 +1,7 @@
 # based on rastrigin from pymap_elites
 # rewritten by Andrew James
 
-import sys, os
+import sys, os, subprocess
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import numpy as np
@@ -53,4 +53,4 @@ px["iso_sigma"] = 0.01,
 px["line_sigma"] = 0.2
 
 
-archive = cvt_map_elites.compute(2, 10, rastrigin, n_niches=10000, max_evals=1e6, log_file=open('cvt.dat', 'w'), params=px)
+archive = cvt_map_elites.compute(2, 10, vsr_simulate, n_niches=10000, max_evals=1e6, log_file=open('cvt.dat', 'w'), params=px)
