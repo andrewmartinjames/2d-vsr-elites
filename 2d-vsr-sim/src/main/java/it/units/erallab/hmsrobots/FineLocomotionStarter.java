@@ -76,6 +76,7 @@ public class FineLocomotionStarter {
       List<Grid.Entry<SerializableFunction<Double, Double>>> entries = new ArrayList<>();
       while (true) {
         String line = br.readLine();
+        System.out.println(line);
         if ((line == null) || (line.isEmpty())) {
           break;
         }
@@ -87,7 +88,7 @@ public class FineLocomotionStarter {
         double phase = Double.parseDouble(pieces[4]);
         entries.add(new Grid.Entry<>(
             x, y,
-            t -> amplitude * Math.sin(-2d * Math.PI * t * frequency + phase))
+            t -> amplitude * Math.sin(-2d * Math.PI * t * frequency + phase * Math.PI))
         );
       }
       int minX = entries.stream().mapToInt(Grid.Entry::getX).min().orElse(0);

@@ -14,6 +14,15 @@ import map_elites.common as cm_map_elites
 # FUNCTION to compute
 
 def vsr_simulate(params):
+
+
+    ##### UNDER CONSTRUCTION #####
+    file = os.popen(
+        'echo "0,0,1,1,0\n1,1,5,2,1" | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary 1,0:1000,100:2000,10 1000 30'
+    )
+    string_of_file = file.read
+    ##############################
+
     metric = None   # fill in with code that calls 2dhmsr with given params
     return metric
 

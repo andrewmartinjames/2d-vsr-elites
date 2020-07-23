@@ -44,14 +44,14 @@ public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
   private final static int TERRAIN_POINTS = 50;
 
   public enum Metric {
-    TOTAL_Y_CHANGE(false),
-    ABSOLUTE_Theta_CHANGE(false),
-    X_DISPLACEMENT(false),
+    TOTAL_Y_CHANGE(true),
+    ABSOLUTE_Theta_CHANGE(true),
+    X_DISPLACEMENT(true),
     TRAVEL_X_VELOCITY(false),
     TRAVEL_X_RELATIVE_VELOCITY(false),
-    CENTER_AVG_Y(true),
-    CONTROL_POWER(true),
-    RELATIVE_CONTROL_POWER(true);
+    CENTER_AVG_Y(false),
+    CONTROL_POWER(false),
+    RELATIVE_CONTROL_POWER(false);
 
     private final boolean toMinimize;
 
