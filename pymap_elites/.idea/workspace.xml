@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="477fadf5-10c7-47d3-847a-96b297fbac86" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../2d-vsr-sim/2dhmsr.jar" beforeDir="false" afterPath="$PROJECT_DIR$/../2d-vsr-sim/2dhmsr.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/FineLocomotionStarter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/FineLocomotionStarter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/SimpleStarter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/randomRobotTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/tasks/Locomotion.java" beforeDir="false" afterPath="$PROJECT_DIR$/../2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/tasks/Locomotion.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2d_vsr_exp.py" beforeDir="false" afterPath="$PROJECT_DIR$/2d_vsr_exp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2d_vsr_exp.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,19 +28,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/Library/Caches/PyCharmCE2019.1/python_stubs/-1199943126/numpy/random/mtrand.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="46845">
+            <state relative-caret-position="553">
               <caret line="3127" column="4" selection-start-line="3127" selection-start-column="4" selection-end-line="3127" selection-end-column="4" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/2d_vsr_exp.py">
+        <entry file="file://$PROJECT_DIR$/experiment.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="659">
-              <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="45" />
+            <state relative-caret-position="491">
+              <caret line="33" lean-forward="true" selection-start-line="33" selection-end-line="33" />
             </state>
           </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/centroids_10000_2.dat">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cvt.dat">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -144,8 +149,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="47" y="23" width="1873" height="1057" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25431967" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25431967" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -158,7 +164,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.32953367" />
-      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.32953367" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -175,13 +181,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Library/Caches/PyCharmCE2019.1/python_stubs/-1199943126/numpy/random/mtrand.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="46845">
-          <caret line="3127" column="4" selection-start-line="3127" selection-start-column="4" selection-end-line="3127" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/map_elites/common.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2985">
@@ -191,8 +190,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/2d_vsr_exp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="659">
-          <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="45" />
+        <state relative-caret-position="239">
+          <caret line="17" column="13" lean-forward="true" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharmCE2019.1/python_stubs/-1199943126/numpy/random/mtrand.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="553">
+          <caret line="3127" column="4" selection-start-line="3127" selection-start-column="4" selection-end-line="3127" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/centroids_10000_2.dat">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cvt.dat">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/experiment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="491">
+          <caret line="33" lean-forward="true" selection-start-line="33" selection-end-line="33" />
         </state>
       </provider>
     </entry>
