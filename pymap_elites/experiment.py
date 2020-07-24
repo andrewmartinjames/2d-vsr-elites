@@ -14,32 +14,36 @@ import map_elites.common as cm_map_elites
 # FUNCTION to compute
 
 def vsr_simulate(params):
+    #### PARAMS FOR SYSTEM INPUT, NEED TO CHANGE SO THAT vsr_simulate(params) -> needed inputs
     x_pos = 0
     y_pos = 0
     amp = 1
     freq = 1
     phase = 0
 
-
+    #### SYSTEM CALL CONSTRUCTION, NEED TO CHANGE TO DESIRED METHOD OF INPUTTING VOXELS
     call_string = 'echo "' + str(x_pos) + ',' + str(y_pos) + ',' + str(amp) + ',' + str(freq) + ',' + str(phase) + '\n' \
                   + '1,1,5,2,1"' + ' | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary 1,0:1000,100:2000,10 1000 30'
 
+    #### SYSTEM CALL, this part is basically done
     file = os.popen(call_string)
     string_of_file = file.read()
 
-    metric = None   # fill in with code that calls 2dhmsr with given params
-    return metric
 
-vsr_simulate()
+    #### CONVERT SYSTEM OUTPUT TO fitness + description - NO WORK DONE YET ON THIS
+    fitness = 1
+    description = [1,1]
+    return fitness, description
+
+
 
 # PARAMETERS - not sure what needs to be changed yet but I included them all w/ original explanations for clarity
-
 px = cm_map_elites.default_params.copy()
 
 # more of this -> higher-quality CVT
 px["cvt_samples"] = 25000
 
-# we evaluate in batches to paralleliez
+# we evaluate in batches to parallelize
 px["batch_size"] = 200
 
 # proportion of niches to be filled before starting
@@ -51,8 +55,8 @@ px["random_init_batch"] = 100
 # when to write results (one generation = one batch)
 px["dump_period"] = 100000
 
-# do we use several cores?
-px["parallel"] = True
+#### no parallelization for now, it might break shit
+px["parallel"] = False
 
 # do we cache the result of CVT and reuse?
 px["cvt_use_cache"] = True
