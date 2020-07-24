@@ -21,16 +21,11 @@ def vsr_simulate(params):
     phase = 0
 
 
-    ##### UNDER CONSTRUCTION #####
-
     call_string = 'echo "' + str(x_pos) + ',' + str(y_pos) + ',' + str(amp) + ',' + str(freq) + ',' + str(phase) + '\n' \
                   + '1,1,5,2,1"' + ' | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary 1,0:1000,100:2000,10 1000 30'
 
     file = os.popen(call_string)
-        #'echo "0,0,1,1,0\n1,1,5,2,1" | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary 1,0:1000,100:2000,10 1000 30'
-    #)
     string_of_file = file.read()
-    ##############################
 
     metric = None   # fill in with code that calls 2dhmsr with given params
     return metric
