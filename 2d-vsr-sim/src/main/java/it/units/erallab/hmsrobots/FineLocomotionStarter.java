@@ -72,6 +72,7 @@ public class FineLocomotionStarter {
     );
     //create robot
     final Grid<SerializableFunction<Double, Double>> timeFunctionGrid;
+
     try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
       List<Grid.Entry<SerializableFunction<Double, Double>>> entries = new ArrayList<>();
       while (true) {
@@ -147,8 +148,12 @@ public class FineLocomotionStarter {
       runner.run();
     } else {
       List<Double> result = locomotion.apply(robot);
-      for (int i = 0; i < locomotion.getMetrics().size(); i++) {
-        System.out.printf("%s = %f%n", locomotion.getMetrics().get(i), result.get(i));
+      System.out.printf("%s=",locomotion.getMetrics().get(0));
+      System.out.printf("%f", result.get(0));
+      for (int i = 1; i < locomotion.getMetrics().size(); i++) {
+        System.out.printf(",%n%s=",locomotion.getMetrics().get(i));
+        System.out.printf("%f", result.get(i));
+
       }
     }
   }
