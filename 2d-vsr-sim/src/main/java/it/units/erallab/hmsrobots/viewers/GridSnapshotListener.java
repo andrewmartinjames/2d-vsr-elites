@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Eric Medvet <eric.medvet@gmail.com> (as alikhan4812)
+ * Copyright (C) 2020 Eric Medvet <eric.medvet@gmail.com> (as eric)
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ package it.units.erallab.hmsrobots.viewers;
  * @author Eric Medvet <eric.medvet@gmail.com>
  */
 public interface GridSnapshotListener {
-  
+
   SnapshotListener listener(int x, int y);
-  
+
 }
