@@ -14,333 +14,201 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.units.erallab.hmsrobots;
+package it.units.erallab.hmsrobots.tasks;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import it.units.erallab.hmsrobots.core.controllers.*;
-import it.units.erallab.hmsrobots.core.objects.*;
-import it.units.erallab.hmsrobots.core.sensors.*;
-import it.units.erallab.hmsrobots.tasks.Locomotion;
+import it.units.erallab.hmsrobots.core.objects.Ground;
+import it.units.erallab.hmsrobots.core.objects.Robot;
+import it.units.erallab.hmsrobots.core.objects.WorldObject;
+import it.units.erallab.hmsrobots.core.objects.immutable.Snapshot;
+import it.units.erallab.hmsrobots.core.objects.immutable.Voxel;
+import it.units.erallab.hmsrobots.util.BoundingBox;
 import it.units.erallab.hmsrobots.util.Grid;
-import it.units.erallab.hmsrobots.viewers.FramesFileWriter;
-import it.units.erallab.hmsrobots.viewers.GridEpisodeRunner;
-import it.units.erallab.hmsrobots.viewers.GridOnlineViewer;
-import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import it.units.erallab.hmsrobots.util.Point2;
+import it.units.erallab.hmsrobots.viewers.SnapshotListener;
 import org.dyn4j.dynamics.Settings;
+import org.dyn4j.dynamics.World;
+import org.dyn4j.geometry.Vector2;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
-/**
- * @author Eric Medvet <eric.medvet@gmail.com>
- */
-public class Starter {
+public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
 
-  private static void sampleExecution() throws IOException {
-    final Locomotion locomotion = new Locomotion(
-            20,
-            Locomotion.createTerrain("flat"),
-            Lists.newArrayList(
-                    Locomotion.Metric.ABS_DELTA_X,
-                    Locomotion.Metric.DELTA_X
-            ),
-            new Settings()
-    );
-    final ControllableVoxel hardMaterialVoxel = new ControllableVoxel(
-            Voxel.SIDE_LENGTH,
-            Voxel.MASS_SIDE_LENGTH_RATIO,
-            50d,
-            Voxel.SPRING_D,
-            Voxel.MASS_LINEAR_DAMPING,
-            Voxel.MASS_ANGULAR_DAMPING,
-            Voxel.FRICTION,
-            Voxel.RESTITUTION,
-            Voxel.MASS,
-            Voxel.LIMIT_CONTRACTION_FLAG,
-            Voxel.MASS_COLLISION_FLAG,
-            Voxel.AREA_RATIO_MAX_DELTA,
-            Voxel.SPRING_SCAFFOLDINGS,
-            ControllableVoxel.MAX_FORCE,
-            ControllableVoxel.ForceMethod.DISTANCE
-    );
-    final ControllableVoxel softMaterialVoxel = new ControllableVoxel(
-            Voxel.SIDE_LENGTH,
-            Voxel.MASS_SIDE_LENGTH_RATIO,
-            5d,
-            Voxel.SPRING_D,
-            Voxel.MASS_LINEAR_DAMPING,
-            Voxel.MASS_ANGULAR_DAMPING,
-            Voxel.FRICTION,
-            Voxel.RESTITUTION,
-            Voxel.MASS,
-            Voxel.LIMIT_CONTRACTION_FLAG,
-            Voxel.MASS_COLLISION_FLAG,
-            Voxel.AREA_RATIO_MAX_DELTA,
-            EnumSet.of(Voxel.SpringScaffolding.SIDE_EXTERNAL, Voxel.SpringScaffolding.CENTRAL_CROSS),
-            ControllableVoxel.MAX_FORCE,
-            ControllableVoxel.ForceMethod.DISTANCE
-    );
-    int w = 20;
-    int h = 5;
-    Robot robot = new Robot(
-            new TimeFunctions(Grid.create(
-                    w, h,
-                    (x, y) -> (Double t) -> Math.sin(-2 * Math.PI * t + Math.PI * ((double) x / (double) w))
-            )),
-            Grid.create(
-                    w, h,
-                    (x, y) -> (y == 0) ? SerializationUtils.clone(hardMaterialVoxel) : SerializationUtils.clone(softMaterialVoxel)
-            )
-    );
-    FramesFileWriter framesFileWriter = new FramesFileWriter(
-            5, 5.5, 0.1, 300, 200, FramesFileWriter.Direction.HORIZONTAL,
-            new File("/home/eric/experiments/2dhmsr/frames.v.png"),
-            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-    );
-    List<Double> result = locomotion.apply(robot, framesFileWriter);
-    framesFileWriter.flush();
-    System.out.println("Outcome: " + result);
+  private final static double INITIAL_PLACEMENT_X_GAP = 1d;
+  private final static double INITIAL_PLACEMENT_Y_GAP = 1d;
+  private final static double TERRAIN_BORDER_HEIGHT = 100d;
+  private final static int TERRAIN_POINTS = 50;
+
+  public enum Metric {
+    DELTA_Y(false),
+    DELTA_Theta(false),
+    DELTA_X(false),
+    ABS_DELTA_X(false);
+
+
+    private final boolean toMinimize;
+
+    Metric(boolean toMinimize) {
+      this.toMinimize = toMinimize;
+    }
+
+    public boolean isToMinimize() {
+      return toMinimize;
+    }
+
   }
 
-  public static void main(String[] args) throws IOException {
-    final Grid<Boolean> structure = Grid.create(7, 4, (x, y) -> (x < 2) || (x >= 5) || (y > 0));
-    Settings settings = new Settings();
-    settings.setStepFrequency(1d / 30d);
-    int controlInterval = 1;
-    //simple
-    double f = 1d;
-    Robot<ControllableVoxel> phasesRobot = new Robot<>(
-            new TimeFunctions(Grid.create(
-                    structure.getW(),
-                    structure.getH(),
-                    (final Integer x, final Integer y) -> (Double t) -> Math.sin(-2 * Math.PI * f * t + Math.PI * ((double) x / (double) structure.getW()))
-            )),
-            Grid.create(structure, b -> b ? new ControllableVoxel() : null)
-    );
-    //multimaterial
-    final ControllableVoxel hardMaterialVoxel = new ControllableVoxel(
-            Voxel.SIDE_LENGTH,
-            Voxel.MASS_SIDE_LENGTH_RATIO,
-            50d,
-            Voxel.SPRING_D,
-            Voxel.MASS_LINEAR_DAMPING,
-            Voxel.MASS_ANGULAR_DAMPING,
-            Voxel.FRICTION,
-            Voxel.RESTITUTION,
-            Voxel.MASS,
-            Voxel.LIMIT_CONTRACTION_FLAG,
-            Voxel.MASS_COLLISION_FLAG,
-            Voxel.AREA_RATIO_MAX_DELTA,
-            Voxel.SPRING_SCAFFOLDINGS,
-            ControllableVoxel.MAX_FORCE,
-            ControllableVoxel.ForceMethod.DISTANCE
-    );
-    final ControllableVoxel softMaterialVoxel = new ControllableVoxel(
-            Voxel.SIDE_LENGTH,
-            Voxel.MASS_SIDE_LENGTH_RATIO,
-            5d,
-            Voxel.SPRING_D,
-            Voxel.MASS_LINEAR_DAMPING,
-            Voxel.MASS_ANGULAR_DAMPING,
-            Voxel.FRICTION,
-            Voxel.RESTITUTION,
-            Voxel.MASS,
-            Voxel.LIMIT_CONTRACTION_FLAG,
-            Voxel.MASS_COLLISION_FLAG,
-            Voxel.AREA_RATIO_MAX_DELTA,
-            EnumSet.of(Voxel.SpringScaffolding.SIDE_EXTERNAL, Voxel.SpringScaffolding.CENTRAL_CROSS),
-            ControllableVoxel.MAX_FORCE,
-            ControllableVoxel.ForceMethod.DISTANCE
-    );
-    Robot<ControllableVoxel> multimaterial = new Robot<>(
-            new TimeFunctions(Grid.create(
-                    structure.getW(),
-                    structure.getH(),
-                    (x, y) -> (Double t) -> Math.sin(-2 * Math.PI * t + Math.PI * ((double) x / (double) structure.getW()))
-            )),
-            Grid.create(
-                    structure.getW(),
-                    structure.getH(),
-                    (x, y) -> (y == 0) ? SerializationUtils.clone(hardMaterialVoxel) : SerializationUtils.clone(softMaterialVoxel)
-            )
-    );
-    //centralized mlp
-    Grid<SensingVoxel> sensingVoxels = Grid.create(structure.getW(), structure.getH(), (x, y) -> {
-      if (structure.get(x, y)) {
-        if (y > 2) {
-          return new SensingVoxel(Arrays.asList(
-                  new Velocity(true, 3d, Velocity.Axis.X, Velocity.Axis.Y),
-                  new Average(new Velocity(true, 3d, Velocity.Axis.X, Velocity.Axis.Y), 1d)
-          ));
-        }
-        if (y == 0) {
-          return new SensingVoxel(Arrays.asList(
-                  new Average(new Touch(), 1d)
-          ));
-        }
-        return new SensingVoxel(Arrays.asList(
-                new AreaRatio(),
-                new ControlPower(settings.getStepFrequency())
-        ));
+  private final double finalT;
+  private final double[][] groundProfile;
+  private final double initialPlacement;
+  private final List<Metric> metrics;
+
+  public Locomotion(double finalT, double[][] groundProfile, List<Metric> metrics, Settings settings) {
+    this(finalT, groundProfile, groundProfile[0][1] + INITIAL_PLACEMENT_X_GAP, metrics, settings);
+  }
+
+  public Locomotion(double finalT, double[][] groundProfile, double initialPlacement, List<Metric> metrics, Settings settings) {
+    super(settings);
+    this.finalT = finalT;
+    this.groundProfile = groundProfile;
+    this.initialPlacement = initialPlacement;
+    this.metrics = metrics;
+  }
+
+  @Override
+  public List<Double> apply(Robot<?> robot, SnapshotListener listener) {
+    List<Point2> centerPositions = new ArrayList<>();
+    //init world
+    World world = new World();
+    world.setSettings(settings);
+    List<WorldObject> worldObjects = new ArrayList<>();
+    Ground ground = new Ground(groundProfile[0], groundProfile[1]);
+    ground.addTo(world);
+    worldObjects.add(ground);
+    //position robot: translate on x
+    BoundingBox boundingBox = robot.boundingBox();
+    robot.translate(new Vector2(initialPlacement - boundingBox.min.x, 0));
+    //translate on y
+    double minYGap = robot.getVoxels().values().stream()
+            .filter(Objects::nonNull)
+            .mapToDouble(v -> ((Voxel) v.immutable()).getShape().boundingBox().min.y - ground.yAt(v.getCenter().x))
+            .min().orElse(0d);
+    robot.translate(new Vector2(0, INITIAL_PLACEMENT_Y_GAP - minYGap));
+    //get initial x
+    double initCenterX = robot.getCenter().x;
+    //add robot to world
+    robot.addTo(world);
+    worldObjects.add(robot);
+    //prepare storage objects
+    Grid<Double> lastControlSignals = null;
+    Grid<Double> sumOfSquaredControlSignals = Grid.create(robot.getVoxels().getW(), robot.getVoxels().getH(), 0d);
+    Grid<Double> sumOfSquaredDeltaControlSignals = Grid.create(robot.getVoxels().getW(), robot.getVoxels().getH(), 0d);
+    //run
+    double t = 0d;
+    while (t < finalT) {
+      t = t + settings.getStepFrequency();
+      world.step(1);
+      robot.act(t);
+      //update center position metrics
+      centerPositions.add(Point2.build(robot.getCenter()));
+      //possibly output snapshot
+      if (listener != null) {
+        Snapshot snapshot = new Snapshot(t, worldObjects.stream().map(WorldObject::immutable).collect(Collectors.toList()));
+        listener.listen(snapshot);
       }
-      return null;
-    });
+    }
+    //compute metrics
+    List<Double> results = new ArrayList<>(metrics.size());
+    for (Metric metric : metrics) {
+      double value = Double.NaN;
+      switch (metric) {
+        case DELTA_Theta:
+          value = deltaTheta(centerPositions);
+          break;
+        case DELTA_Y:
+          value = deltaY(centerPositions);
+          break;
+        case DELTA_X:
+          value = (robot.getCenter().x - initCenterX);
+          break;
+        case ABS_DELTA_X:
+          value=absDeltaX(centerPositions);
+          break;
+      }
+      results.add(value);
+    }
+    return results;
+  }
+
+  private static double deltaTheta(List<Point2> centerPositions) {
+    double[] thetaList = centerPositions.stream().mapToDouble((p) -> Math.atan(p.y / p.x)).toArray();
+    double previous = thetaList[0];
+    double value = 0;
+    for (double c : thetaList
+    ) {
+      value = value + c - previous;
+      previous = c;
+    }
+    return value;
+
+  }
+
+
+  private static double deltaY(List<Point2> centerPositions) {
+    double[] yList = centerPositions.stream().mapToDouble((p) -> p.y).toArray();
+    double previous = yList[0];
+    double value = 0;
+    for (double c : yList
+    ) {
+      value = value + c - previous;
+      previous = c;
+    }
+    return value;
+  }
+
+  //could have used the above function --ali
+  private static double absDeltaX(List<Point2> centerPositions) {
+    double[] xList = centerPositions.stream().mapToDouble((p) -> p.x).toArray();
+    double previous = xList[0];
+    double value = 0;
+    for (double c : xList
+    ) {
+      value = value + Math.abs(c - previous);
+      previous = c;
+    }
+    return value;
+  }
+
+
+  private static double[][] randomTerrain(int n, double length, double peak, double borderHeight, Random random) {
+    double[] xs = new double[n + 2];
+    double[] ys = new double[n + 2];
+    xs[0] = 0d;
+    xs[n + 1] = length;
+    ys[0] = borderHeight;
+    ys[n + 1] = borderHeight;
+    for (int i = 1; i < n + 1; i++) {
+      xs[i] = 1 + (double) (i - 1) * (length - 2d) / (double) n;
+      ys[i] = random.nextDouble() * peak;
+    }
+    return new double[][]{xs, ys};
+  }
+
+  public static double[][] createTerrain(String name) {
     Random random = new Random(1);
-    Robot<SensingVoxel> centralizedMlpRobot = new Robot(
-            new CentralizedMLP(sensingVoxels, new int[]{100}, t -> 1d * Math.sin(-2d * Math.PI * t * 0.5d)),
-            SerializationUtils.clone(sensingVoxels)
-    );
-    double[] weights = ((CentralizedMLP) centralizedMlpRobot.getController()).getParams();
-    for (int i = 0; i < weights.length; i++) {
-      weights[i] = random.nextDouble() * 2d - 1d;
+    if (name.equals("flat")) {
+      return new double[][]{new double[]{0, 10, 1990, 2000}, new double[]{TERRAIN_BORDER_HEIGHT, 0, 0, TERRAIN_BORDER_HEIGHT}};
+    } else if (name.startsWith("uneven")) {
+      int h = Integer.parseInt(name.replace("uneven", ""));
+      return randomTerrain(TERRAIN_POINTS, 2000, h, TERRAIN_BORDER_HEIGHT, random);
     }
-    ((CentralizedMLP) centralizedMlpRobot.getController()).setParams(weights);
-    //distributed
-    DistributedMLP distributedMLP = new DistributedMLP(sensingVoxels, new int[0], 2);
-    weights = distributedMLP.getParams();
-    for (int i = 0; i < weights.length; i++) {
-      weights[i] = random.nextDouble() * 2d - 1d;
-    }
-    distributedMLP.setParams(weights);
-    Robot<SensingVoxel> distributedMlpRobot1 = new Robot<>(
-            new Discontinuous<>(distributedMLP, 0d, 1d / 5d, Discontinuous.Type.IMPULSE),
-            SerializationUtils.clone(sensingVoxels)
-    );
-    Robot<SensingVoxel> distributedMlpRobot2 = new Robot<>(
-            new Discontinuous<>(SerializationUtils.clone(distributedMLP), 0d, 1d / 5d, Discontinuous.Type.STEP),
-            SerializationUtils.clone(sensingVoxels)
-    );
-    //episode
-    Locomotion locomotion = new Locomotion(
-            60,
-            Locomotion.createTerrain("uneven5"),
-            Lists.newArrayList(Locomotion.Metric.DELTA_X),
-            settings
-    );
-    Grid<Pair<String, Robot<?>>> namedSolutionGrid = Grid.create(1, 2);
-    namedSolutionGrid.set(0, 0, Pair.of("phases", phasesRobot));
-    namedSolutionGrid.set(0, 1, Pair.of("phases-breakable", new Robot(
-            new SequentialBreakingController(
-                    SerializationUtils.clone(phasesRobot.getController()),
-                    2d,
-                    random,
-                    Maps.asMap(
-                            EnumSet.of(BreakableVoxel.ComponentType.ACTUATOR, BreakableVoxel.ComponentType.STRUCTURE),
-                            c -> EnumSet.of(BreakableVoxel.MalfunctionType.FROZEN)
-                    )
-            ),
-            Grid.create(distributedMlpRobot2.getVoxels(), v -> v == null ? null : new BreakableVoxel(SerializationUtils.clone(v).getSensors(), random))
-    )));
-/*
-    namedSolutionGrid.set(0, 0, Pair.of("dmlp", distributedMlpRobot2));
-    namedSolutionGrid.set(0, 1, Pair.of("dmlp-breakable", new Robot(
-        new SequentialBreakingController(
-            SerializationUtils.clone(distributedMlpRobot2.getController()),
-            2d,
-            random,
-            Maps.asMap(
-                EnumSet.of(BreakableVoxel.ComponentType.ACTUATOR, BreakableVoxel.ComponentType.SENSORS),
-                c -> EnumSet.of(BreakableVoxel.MalfunctionType.ZERO, BreakableVoxel.MalfunctionType.FROZEN)
-            )
-        ),
-        Grid.create(distributedMlpRobot2.getVoxels(), v -> v == null ? null : new BreakableVoxel(SerializationUtils.clone(v).getSensors(), random))
-    )));
-*/
-    /*namedSolutionGrid.set(0, 0, Pair.of("phases", phasesRobot));
-    namedSolutionGrid.set(1, 0, Pair.of("centralized", centralizedMlpRobot));
-    namedSolutionGrid.set(0, 1, Pair.of("distributedMLP-impulse", distributedMlpRobot1));
-    namedSolutionGrid.set(1, 1, Pair.of("distributedMLP-step", distributedMlpRobot2));
-    namedSolutionGrid.set(0, 2, Pair.of("multimaterial", multimaterial));
-    namedSolutionGrid.set(1, 2, Pair.of("multimaterial", SerializationUtils.clone(multimaterial)));*/
-    ScheduledExecutorService uiExecutor = Executors.newScheduledThreadPool(4);
-    ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    GridOnlineViewer gridOnlineViewer = new GridOnlineViewer(Grid.create(namedSolutionGrid, Pair::getLeft), uiExecutor);
-    gridOnlineViewer.start(5);
-    GridEpisodeRunner<Robot<?>> runner = new GridEpisodeRunner<Robot<?>>(
-            namedSolutionGrid,
-            locomotion,
-            gridOnlineViewer,
-            executor
-    );
-    runner.run();
+    return null;
   }
 
-  public static double assessOnLocomotion(double[] weights) {
-    // set robot shape and sensors
-    final Grid<Boolean> structure = Grid.create(7, 4, (x, y) -> (x < 2) || (x >= 5) || (y > 0));
-    Grid<SensingVoxel> voxels = Grid.create(structure.getW(), structure.getH(), (x, y) -> {
-      if (structure.get(x, y)) {
-        if (y > 2) {
-          return new SensingVoxel(Arrays.asList(
-                  new Velocity(true, 3d, Velocity.Axis.X, Velocity.Axis.Y),
-                  new Average(new Velocity(true, 3d, Velocity.Axis.X, Velocity.Axis.Y), 1d)
-          ));
-        }
-        if (y == 0) {
-          return new SensingVoxel(Arrays.asList(
-                  new Average(new Touch(), 1d)
-          ));
-        }
-        return new SensingVoxel(Arrays.asList(
-                new AreaRatio()
-        ));
-      }
-      return null;
-    });
-    // set controller
-    CentralizedMLP controller = new CentralizedMLP(
-            voxels,
-            new int[]{100},
-            t -> 1d * Math.sin(-2d * Math.PI * t * 0.5d)
-    );
-    controller.setParams(weights);
-    Robot<SensingVoxel> robot = new Robot(controller, voxels);
-    // set task
-    Settings settings = new Settings();
-    settings.setStepFrequency(1d / 30d);
-    Locomotion locomotion = new Locomotion(
-            60,
-            Locomotion.createTerrain("flat"),
-            Lists.newArrayList(Locomotion.Metric.DELTA_X),
-            settings
-    );
-    // do task
-    List<Double> results = locomotion.apply(robot);
-    return results.get(0);
+  public List<Metric> getMetrics() {
+    return metrics;
   }
-
-  public static double assessOnLocomotion2(double[] phases) {
-    // set robot shape and sensors
-    Grid<ControllableVoxel> voxels = Grid.create(10, 4, (x, y) -> new ControllableVoxel());
-    // set controller
-    double f = 1d;
-    Controller<ControllableVoxel> controller = new TimeFunctions(Grid.create(
-            voxels.getW(),
-            voxels.getH(),
-            (x, y) -> (t) -> Math.sin(-2 * Math.PI * f * t + Math.PI * phases[(x + (int) Math.floor(y / voxels.getH()))]))
-    );
-    Robot<ControllableVoxel> robot = new Robot<>(controller, voxels);
-    // set task
-    Settings settings = new Settings();
-    settings.setStepFrequency(1d / 30d);
-    Locomotion locomotion = new Locomotion(
-            60,
-            Locomotion.createTerrain("flat"),
-            Lists.newArrayList(Locomotion.Metric.DELTA_X),
-            settings
-    );
-    // do task
-    List<Double> results = locomotion.apply(robot);
-    return results.get(0);
-  }
-
 }

@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # CENTER_AVG_Y,
 # CONTROL_POWER ,
 # RELATIVE_CONTROL_POWER
-
+import numpy as np
 
 def vsr_simulate():
 
@@ -19,12 +19,17 @@ def vsr_simulate():
     dictMetrice={}
     for metric in arrSplited_matrices:
         key_valueMetric=metric.split("=")
-        dictMetrice[key_valueMetric[0]]=key_valueMetric[1]
-        dataArr.append(key_valueMetric[1])
+        dictMetrice[key_valueMetric[0]]=float(key_valueMetric[1])
+
+    dataArr.append(dictMetrice.get("DELTA_X"))
+    dataArr.append(dictMetrice.get("DELTA_Y"))
+    dataArr.append(dictMetrice.get("DELTA_Theta"))
     print("\n",dictMetrice)
     print("\n",dataArr)
     ##############################
     metric = None   # fill in with code that calls 2dhmsr with given params
-    return metric
+    return dictMetrice.get("ABS_DELTA_X"),np.array(dataArr)
+
 
 vsr_simulate()
+
