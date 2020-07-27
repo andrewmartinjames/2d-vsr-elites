@@ -10,72 +10,93 @@ import map_elites.cvt as cvt_map_elites
 import map_elites.common as cm_map_elites
 
 
-
 # FUNCTION to compute
 
 def vsr_simulate(params):
-    #### PARAMS FOR SYSTEM INPUT, NEED TO CHANGE SO THAT vsr_simulate(params) -> needed inputs
+    amp_list = []
+    freq_list = []
+    phase_list =[]
+    p1_count = 0
+    p2_count = 1
+    p3_count = 2
+    while (p1_count < len(params)):
+        amp_list.append(params[p1_count]*10)
+        p1_count += 3
+    while (p2_count < len(params)):
+        freq_list.append(params[p2_count] MODIFIED TO FIT FREQ RANGE)
+        p2_count += 3
+    while (p3_count < len(params)):
+        phase_list.append(params[p3_count] MODIFIED TO FIT -720,720)
 
-    # for each voxel:
-    #   vox_string = str(x_pos) + ',' + str (y_pos) + params_to_[0]
-    #
+    all_vox_string = ""
+    for i in range(0,len(positions)-1):
+        coords = positions[i].split(",")
+        all_vox_string += str(coords[0]) + ',' + str(coords[1]) + ',' + str(amp_list[i]) + ',' + str(freq_list[i]) + ',' + str(phase_list[i]) + '\n'
+    last_vox = len(positions) - 1
+    coords = positions[last_vox].split(",")
+    all_vox_string += str(coords[0]) + ',' + str(coords[1]) + ',' + str(amp_list[last_vox]) + ',' + str(freq_list[last_vox]) + ',' + str(phase_list[last_vox])
 
-
-
-
-    x_pos = params[0]
-    y_pos = params0
-    amp = 1
-    freq = 1
-    phase = 0
 
     #### SYSTEM CALL CONSTRUCTION, NEED TO CHANGE TO DESIRED METHOD OF INPUTTING VOXELS
-    call_string = 'echo "' + str(x_pos) + ',' + str(y_pos) + ',' + str(amp) + ',' + str(freq) + ',' + str(phase) + '\n' \
-                  + '1,1,5,2,1"' + ' | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary 1,0:1000,100:2000,10 1000 30'
+    call_string = 'echo "' + all_vox_string + ' | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary ' + terrain + ' ' + init_pos + ' ' + sim_time
 
     #### SYSTEM CALL, this part is basically done
     file = os.popen(call_string)
-    string_of_file = file.read()
+    output_string = file.read()
 
 
     #### CONVERT SYSTEM OUTPUT TO fitness + description - NO WORK DONE YET ON THIS
-    fitness = 1
-    description = [1,1]
-    return fitness, description
+    fit = 1
+    desc = [1,1]
+    return fit, desc
 
 
+if __name__ == "__main__":
 
-# PARAMETERS - not sure what needs to be changed yet but I included them all w/ original explanations for clarity
-px = cm_map_elites.default_params.copy()
+    vox_file = open(sys.argv[1])
+    global positions
+    positions = vox_file.readlines()
+    for pos in positions:
+        pos.strip("\n")
 
-# more of this -> higher-quality CVT
-px["cvt_samples"] = 25000
+    global terrain
+    terrain = sys.argv[2]
+    global init_pos
+    init_pos = sys.argv[3]
+    global sim_time
+    sim_time = sys.argv[4]
 
-# we evaluate in batches to parallelize
-px["batch_size"] = 200
+    # PARAMETERS - not sure what needs to be changed yet but I included them all w/ original explanations for clarity
+    px = cm_map_elites.default_params.copy()
 
-# proportion of niches to be filled before starting
-px["random_init"] = 0.1
+    # more of this -> higher-quality CVT
+    px["cvt_samples"] = 25000
 
-# batch for random initialization
-px["random_init_batch"] = 100
+    # we evaluate in batches to parallelize
+    px["batch_size"] = 200
 
-# when to write results (one generation = one batch)
-px["dump_period"] = 100000
+    # proportion of niches to be filled before starting
+    px["random_init"] = 0.1
 
-#### no parallelization for now, it might break shit
-px["parallel"] = False
+    # batch for random initialization
+    px["random_init_batch"] = 100
 
-# do we cache the result of CVT and reuse?
-px["cvt_use_cache"] = True
+    # when to write results (one generation = one batch)
+    px["dump_period"] = 100000
 
-# min/max of parameters
-px["min"] = 0
-px["max"] = 1
+    #### no parallelization for now, it might break shit
+    px["parallel"] = False
 
-# only useful if you use the 'iso_dd' variation operator
-px["iso_sigma"] = 0.01,
-px["line_sigma"] = 0.2
+    # do we cache the result of CVT and reuse?
+    px["cvt_use_cache"] = True
+
+    # min/max of parameters
+    px["min"] = 0
+    px["max"] = 1
+
+    # only useful if you use the 'iso_dd' variation operator
+    px["iso_sigma"] = 0.01,
+    px["line_sigma"] = 0.2
 
 
-archive = cvt_map_elites.compute(2, NUMBEROFDIMENSIONS, vsr_simulate, n_niches=10000, max_evals=1e6, log_file=open('cvt.dat', 'w'), params=px)
+    archive = cvt_map_elites.compute(2, len(positions)*3, vsr_simulate, n_niches=10000, max_evals=1e6, log_file=open('cvt.dat', 'w'), params=px)

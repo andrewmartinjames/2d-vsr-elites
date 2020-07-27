@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="477fadf5-10c7-47d3-847a-96b297fbac86" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../2d-vsr-sim/2dhmsr.jar" beforeDir="false" afterPath="$PROJECT_DIR$/../2d-vsr-sim/2dhmsr.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/FineLocomotionStarter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/FineLocomotionStarter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2dhmsr.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,8 +15,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/map_elites/cvt.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1695">
-              <caret line="120" column="29" selection-start-line="120" selection-start-column="29" selection-end-line="120" selection-end-column="29" />
+            <state relative-caret-position="164">
+              <caret line="65" column="31" lean-forward="true" selection-start-line="65" selection-start-column="31" selection-end-line="65" selection-end-column="31" />
               <folding>
                 <element signature="e#1876#1887#0" expanded="true" />
               </folding>
@@ -40,8 +36,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/experiment.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="33" column="142" lean-forward="true" selection-start-line="33" selection-start-column="142" selection-end-line="33" selection-end-column="142" />
+            <state relative-caret-position="399">
+              <caret line="39" column="82" selection-start-line="39" selection-start-column="82" selection-end-line="39" selection-end-column="82" />
             </state>
           </provider>
         </entry>
@@ -87,8 +83,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="width" value="1920" />
-    <option name="height" value="1080" />
+    <option name="x" value="47" />
+    <option name="y" value="23" />
+    <option name="width" value="1873" />
+    <option name="height" value="1057" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -234,16 +232,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/map_elites/cvt.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1695">
-          <caret line="120" column="29" selection-start-line="120" selection-start-column="29" selection-end-line="120" selection-end-column="29" />
-          <folding>
-            <element signature="e#1876#1887#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Library/Caches/PyCharmCE2019.1/python_stubs/-1199943126/numpy/random/mtrand.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="46845">
@@ -264,10 +252,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/map_elites/cvt.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="65" column="31" lean-forward="true" selection-start-line="65" selection-start-column="31" selection-end-line="65" selection-end-column="31" />
+          <folding>
+            <element signature="e#1876#1887#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/experiment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="33" column="142" lean-forward="true" selection-start-line="33" selection-start-column="142" selection-end-line="33" selection-end-column="142" />
+        <state relative-caret-position="399">
+          <caret line="39" column="82" selection-start-line="39" selection-start-column="82" selection-end-line="39" selection-end-column="82" />
         </state>
       </provider>
     </entry>
