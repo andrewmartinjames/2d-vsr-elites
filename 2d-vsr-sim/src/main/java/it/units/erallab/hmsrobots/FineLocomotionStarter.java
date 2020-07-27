@@ -14,147 +14,201 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.units.erallab.hmsrobots;
+package it.units.erallab.hmsrobots.tasks;
 
-import it.units.erallab.hmsrobots.core.controllers.TimeFunctions;
-import it.units.erallab.hmsrobots.core.objects.ControllableVoxel;
+import it.units.erallab.hmsrobots.core.objects.Ground;
 import it.units.erallab.hmsrobots.core.objects.Robot;
-import it.units.erallab.hmsrobots.core.objects.immutable.Immutable;
+import it.units.erallab.hmsrobots.core.objects.WorldObject;
+import it.units.erallab.hmsrobots.core.objects.immutable.Snapshot;
 import it.units.erallab.hmsrobots.core.objects.immutable.Voxel;
-import it.units.erallab.hmsrobots.tasks.Locomotion;
+import it.units.erallab.hmsrobots.util.BoundingBox;
 import it.units.erallab.hmsrobots.util.Grid;
-import it.units.erallab.hmsrobots.util.SerializableFunction;
-import it.units.erallab.hmsrobots.viewers.GridEpisodeRunner;
-import it.units.erallab.hmsrobots.viewers.GridOnlineViewer;
+import it.units.erallab.hmsrobots.util.Point2;
 import it.units.erallab.hmsrobots.viewers.SnapshotListener;
-import org.apache.commons.lang3.tuple.Pair;
 import org.dyn4j.dynamics.Settings;
+import org.dyn4j.dynamics.World;
+import org.dyn4j.geometry.Vector2;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Collectors;
 
-/**
- * @author eric
- * @created 2020/07/14
- * @project TwoDimHighlyModularSoftRobots
- */
-public class FineLocomotionStarter {
+public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
 
-  public static void main(String[] args) {
-    //stdin: description of the robot: grid x, grid y, amplitude, frequency, phase (one line per voxel, ended by an empty line)
-    //stout: time, x, y, area ratio (one line per voxel)
-    //args: type (csv/gui/summary), terrain string, starting y, simulation time
-    //example: java -cp classes/artifacts/2dhmsr_jar/2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter csv 1,0:1000,100:2000,10 1 10
+  private final static double INITIAL_PLACEMENT_X_GAP = 1d;
+  private final static double INITIAL_PLACEMENT_Y_GAP = 1d;
+  private final static double TERRAIN_BORDER_HEIGHT = 100d;
+  private final static int TERRAIN_POINTS = 50;
 
-    //create locomotion task
-    Locomotion locomotion = new Locomotion(
-        Double.parseDouble(args[3]),
-        new double[][]{
-            Arrays.stream(args[1].split(":"))
-                .map(s -> s.split(",")[0])
-                .mapToDouble(Double::parseDouble)
-                .toArray(),
-            Arrays.stream(args[1].split(":"))
-                .map(s -> s.split(",")[1])
-                .mapToDouble(Double::parseDouble)
-                .toArray()
-        },
-        Double.parseDouble(args[2]),
-        List.of(Locomotion.Metric.values()),
-        new Settings()
-    );
-    //create robot
-    final Grid<SerializableFunction<Double, Double>> timeFunctionGrid;
+  public enum Metric {
+    DELTA_Y(false),
+    DELTA_Theta(false),
+    DELTA_X(false),
+    ABS_DELTA_X(false);
 
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-      List<Grid.Entry<SerializableFunction<Double, Double>>> entries = new ArrayList<>();
-      while (true) {
-        String line = br.readLine();
-        if ((line == null) || (line.isEmpty())) {
+
+    private final boolean toMinimize;
+
+    Metric(boolean toMinimize) {
+      this.toMinimize = toMinimize;
+    }
+
+    public boolean isToMinimize() {
+      return toMinimize;
+    }
+
+  }
+
+  private final double finalT;
+  private final double[][] groundProfile;
+  private final double initialPlacement;
+  private final List<Metric> metrics;
+
+  public Locomotion(double finalT, double[][] groundProfile, List<Metric> metrics, Settings settings) {
+    this(finalT, groundProfile, groundProfile[0][1] + INITIAL_PLACEMENT_X_GAP, metrics, settings);
+  }
+
+  public Locomotion(double finalT, double[][] groundProfile, double initialPlacement, List<Metric> metrics, Settings settings) {
+    super(settings);
+    this.finalT = finalT;
+    this.groundProfile = groundProfile;
+    this.initialPlacement = initialPlacement;
+    this.metrics = metrics;
+  }
+
+  @Override
+  public List<Double> apply(Robot<?> robot, SnapshotListener listener) {
+    List<Point2> centerPositions = new ArrayList<>();
+    //init world
+    World world = new World();
+    world.setSettings(settings);
+    List<WorldObject> worldObjects = new ArrayList<>();
+    Ground ground = new Ground(groundProfile[0], groundProfile[1]);
+    ground.addTo(world);
+    worldObjects.add(ground);
+    //position robot: translate on x
+    BoundingBox boundingBox = robot.boundingBox();
+    robot.translate(new Vector2(initialPlacement - boundingBox.min.x, 0));
+    //translate on y
+    double minYGap = robot.getVoxels().values().stream()
+            .filter(Objects::nonNull)
+            .mapToDouble(v -> ((Voxel) v.immutable()).getShape().boundingBox().min.y - ground.yAt(v.getCenter().x))
+            .min().orElse(0d);
+    robot.translate(new Vector2(0, INITIAL_PLACEMENT_Y_GAP - minYGap));
+    //get initial x
+    double initCenterX = robot.getCenter().x;
+    //add robot to world
+    robot.addTo(world);
+    worldObjects.add(robot);
+    //prepare storage objects
+    Grid<Double> lastControlSignals = null;
+    Grid<Double> sumOfSquaredControlSignals = Grid.create(robot.getVoxels().getW(), robot.getVoxels().getH(), 0d);
+    Grid<Double> sumOfSquaredDeltaControlSignals = Grid.create(robot.getVoxels().getW(), robot.getVoxels().getH(), 0d);
+    //run
+    double t = 0d;
+    while (t < finalT) {
+      t = t + settings.getStepFrequency();
+      world.step(1);
+      robot.act(t);
+      //update center position metrics
+      centerPositions.add(Point2.build(robot.getCenter()));
+      //possibly output snapshot
+      if (listener != null) {
+        Snapshot snapshot = new Snapshot(t, worldObjects.stream().map(WorldObject::immutable).collect(Collectors.toList()));
+        listener.listen(snapshot);
+      }
+    }
+    //compute metrics
+    List<Double> results = new ArrayList<>(metrics.size());
+    for (Metric metric : metrics) {
+      double value = Double.NaN;
+      switch (metric) {
+        case DELTA_Theta:
+          value = deltaTheta(centerPositions);
           break;
-        }
-        String[] pieces = line.split(",");
-        int x = Integer.parseInt(pieces[0]);
-        int y = Integer.parseInt(pieces[1]);
-        double amplitude = Double.parseDouble(pieces[2]);
-        double frequency = Double.parseDouble(pieces[3]);
-        double phase = Double.parseDouble(pieces[4]);
-        entries.add(new Grid.Entry<>(
-            x, y,
-            t -> amplitude * Math.sin(-2d * Math.PI * t * frequency + phase))
-        );
+        case DELTA_Y:
+          value = deltaY(centerPositions);
+          break;
+        case DELTA_X:
+          value = (robot.getCenter().x - initCenterX);
+          break;
+        case ABS_DELTA_X:
+          value=absDeltaX(centerPositions);
+          break;
       }
-      int minX = entries.stream().mapToInt(Grid.Entry::getX).min().orElse(0);
-      int maxX = entries.stream().mapToInt(Grid.Entry::getX).max().orElse(0);
-      int minY = entries.stream().mapToInt(Grid.Entry::getY).min().orElse(0);
-      int maxY = entries.stream().mapToInt(Grid.Entry::getY).max().orElse(0);
-      timeFunctionGrid = Grid.create(maxX - minX + 1, maxY - minY + 1);
-      entries.forEach(e -> {
-        timeFunctionGrid.set(e.getX() - minX, e.getY() - minY, e.getValue());
-      });
-    } catch (IOException e) {
-      System.err.printf("Cannot read robot description from standard input: %s%n", e);
-      return;
+      results.add(value);
     }
-    Robot<ControllableVoxel> robot = new Robot<>(
-        new TimeFunctions(timeFunctionGrid),
-        Grid.create(
-            timeFunctionGrid.getW(),
-            timeFunctionGrid.getH(),
-            (x, y) -> timeFunctionGrid.get(x, y) != null ? (new ControllableVoxel()) : null
-        )
-    );
-    //run simulation
-    if (args[0].equals("csv")) {
-      SnapshotListener listener = snapshot -> {
-        for (Immutable immutable : snapshot.getObjects()) {
-          if (immutable instanceof it.units.erallab.hmsrobots.core.objects.immutable.Robot) {
-            for (Immutable child : immutable.getChildren()) {
-              if (child instanceof Voxel) {
-                Voxel voxel = (Voxel) child;
-                System.out.printf("%f;%f;%f;%f%n",
-                    snapshot.getTime(),
-                    voxel.getShape().center().x,
-                    voxel.getShape().center().y,
-                    voxel.getAreaRatio()
-                );
-              }
-            }
-          }
-        }
-      };
-      locomotion.apply(robot, listener);
-    } else if (args[0].equals("gui")) {
-      ScheduledExecutorService uiExecutor = Executors.newScheduledThreadPool(4);
-      ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-      GridOnlineViewer gridOnlineViewer = new GridOnlineViewer(
-          Grid.create(1, 1, "Simulation"),
-          uiExecutor
-      );
-      gridOnlineViewer.start(5);
-      GridEpisodeRunner<Robot<?>> runner = new GridEpisodeRunner<>(
-          Grid.create(1, 1, Pair.of("Robot", robot)),
-          locomotion,
-          gridOnlineViewer,
-          executor
-      );
-      runner.run();
-    } else {
-      List<Double> result = locomotion.apply(robot);
-      System.out.printf("%s=",locomotion.getMetrics().get(0));
-      System.out.printf("%f", result.get(0));
-      for (int i = 1; i < locomotion.getMetrics().size(); i++) {
-        System.out.printf(",%n%s=",locomotion.getMetrics().get(i));
-        System.out.printf("%f", result.get(i));
+    return results;
+  }
 
-      }
+  private static double deltaTheta(List<Point2> centerPositions) {
+    double[] thetaList = centerPositions.stream().mapToDouble((p) -> Math.atan(p.y / p.x)).toArray();
+    double previous = thetaList[0];
+    double value = 0;
+    for (double c : thetaList
+    ) {
+      value = value + c - previous;
+      previous = c;
     }
+    return value;
+
+  }
+
+
+  private static double deltaY(List<Point2> centerPositions) {
+    double[] yList = centerPositions.stream().mapToDouble((p) -> p.y).toArray();
+    double previous = yList[0];
+    double value = 0;
+    for (double c : yList
+    ) {
+      value = value + c - previous;
+      previous = c;
+    }
+    return value;
+  }
+
+  //could have used the above function --ali
+  private static double absDeltaX(List<Point2> centerPositions) {
+    double[] xList = centerPositions.stream().mapToDouble((p) -> p.x).toArray();
+    double previous = xList[0];
+    double value = 0;
+    for (double c : xList
+    ) {
+      value = value + Math.abs(c - previous);
+      previous = c;
+    }
+    return value;
+  }
+
+
+  private static double[][] randomTerrain(int n, double length, double peak, double borderHeight, Random random) {
+    double[] xs = new double[n + 2];
+    double[] ys = new double[n + 2];
+    xs[0] = 0d;
+    xs[n + 1] = length;
+    ys[0] = borderHeight;
+    ys[n + 1] = borderHeight;
+    for (int i = 1; i < n + 1; i++) {
+      xs[i] = 1 + (double) (i - 1) * (length - 2d) / (double) n;
+      ys[i] = random.nextDouble() * peak;
+    }
+    return new double[][]{xs, ys};
+  }
+
+  public static double[][] createTerrain(String name) {
+    Random random = new Random(1);
+    if (name.equals("flat")) {
+      return new double[][]{new double[]{0, 10, 1990, 2000}, new double[]{TERRAIN_BORDER_HEIGHT, 0, 0, TERRAIN_BORDER_HEIGHT}};
+    } else if (name.startsWith("uneven")) {
+      int h = Integer.parseInt(name.replace("uneven", ""));
+      return randomTerrain(TERRAIN_POINTS, 2000, h, TERRAIN_BORDER_HEIGHT, random);
+    }
+    return null;
+  }
+
+  public List<Metric> getMetrics() {
+    return metrics;
   }
 }
