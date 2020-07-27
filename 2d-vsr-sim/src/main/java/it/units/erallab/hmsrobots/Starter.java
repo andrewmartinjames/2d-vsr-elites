@@ -50,8 +50,8 @@ public class Starter {
         20,
         Locomotion.createTerrain("flat"),
         Lists.newArrayList(
-            Locomotion.Metric.TRAVEL_X_VELOCITY,
-            Locomotion.Metric.RELATIVE_CONTROL_POWER
+            Locomotion.Metric.INTEGRAL_Theta,
+            Locomotion.Metric.DELTA_X
         ),
         new Settings()
     );
@@ -223,7 +223,7 @@ public class Starter {
     Locomotion locomotion = new Locomotion(
         60,
         Locomotion.createTerrain("uneven5"),
-        Lists.newArrayList(Locomotion.Metric.TRAVEL_X_VELOCITY),
+        Lists.newArrayList(Locomotion.Metric.DELTA_X),
         settings
     );
     Grid<Pair<String, Robot<?>>> namedSolutionGrid = Grid.create(1, 2);
@@ -310,7 +310,7 @@ public class Starter {
     Locomotion locomotion = new Locomotion(
         60,
         Locomotion.createTerrain("flat"),
-        Lists.newArrayList(Locomotion.Metric.TRAVEL_X_VELOCITY),
+        Lists.newArrayList(Locomotion.Metric.DELTA_X),
         settings
     );
     // do task
@@ -335,7 +335,7 @@ public class Starter {
     Locomotion locomotion = new Locomotion(
         60,
         Locomotion.createTerrain("flat"),
-        Lists.newArrayList(Locomotion.Metric.TRAVEL_X_VELOCITY),
+        Lists.newArrayList(Locomotion.Metric.DELTA_X),
         settings
     );
     // do task

@@ -44,14 +44,11 @@ public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
   private final static int TERRAIN_POINTS = 50;
 
   public enum Metric {
-    TOTAL_Y_CHANGE(true),
-    ABSOLUTE_Theta_CHANGE(true),
-    X_DISPLACEMENT(true),
-    TRAVEL_X_VELOCITY(false),
-    TRAVEL_X_RELATIVE_VELOCITY(false),
-    CENTER_AVG_Y(false),
-    CONTROL_POWER(false),
-    RELATIVE_CONTROL_POWER(false);
+    INTEGRAL_Y(true),
+    INTEGRAL_Theta(true),
+    DELTA_X(true),
+    ABS_INTEGRAL_X(true);
+
 
     private final boolean toMinimize;
 
@@ -129,38 +126,17 @@ public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
     for (Metric metric : metrics) {
       double value = Double.NaN;
       switch (metric) {
-        case ABSOLUTE_Theta_CHANGE:
-          value = deltaTheta(centerPositions);
+        case INTEGRAL_Theta:
+          value = integralTheta(centerPositions);
           break;
-        case TOTAL_Y_CHANGE:
-          value = deltaY(centerPositions);
+        case INTEGRAL_Y:
+          value = integralY(centerPositions);
           break;
-        case X_DISPLACEMENT:
+        case DELTA_X:
           value = (robot.getCenter().x - initCenterX);
           break;
-        case TRAVEL_X_VELOCITY:
-          value = (robot.getCenter().x - initCenterX) / t;
-          break;
-        case TRAVEL_X_RELATIVE_VELOCITY:
-          value = (robot.getCenter().x - initCenterX) / t / Math.max(boundingBox.max.x - boundingBox.min.x, boundingBox.max.y - boundingBox.min.y);
-          break;
-        case CENTER_AVG_Y:
-          value = centerPositions.stream()
-              .mapToDouble((p) -> p.y)
-              .average()
-              .orElse(0);
-          break;
-        case CONTROL_POWER:
-          value = robot.getVoxels().values().stream()
-              .filter(v -> (v != null) && (v instanceof ControllableVoxel))
-              .mapToDouble(v -> v.getControlEnergy())
-              .sum() / t;
-          break;
-        case RELATIVE_CONTROL_POWER:
-          value = robot.getVoxels().values().stream()
-              .filter(v -> (v != null) && (v instanceof ControllableVoxel))
-              .mapToDouble(v -> v.getControlEnergy())
-              .sum() / t / robot.getVoxels().values().stream().filter(v -> (v != null)).count();
+        case ABS_INTEGRAL_X:
+          value=absIntegralX(centerPositions);
           break;
       }
       results.add(value);
@@ -168,13 +144,13 @@ public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
     return results;
   }
 
-  private static double deltaTheta(List<Point2> centerPositions) {
+  private static double integralTheta(List<Point2> centerPositions) {
     double[] thetaList = centerPositions.stream().mapToDouble((p) -> Math.atan(p.y / p.x)).toArray();
     double previous = thetaList[0];
     double value = 0;
     for (double c : thetaList
     ) {
-      value = value + Math.abs(c - previous);
+      value = value + c - previous;
       previous = c;
     }
     return value;
@@ -182,18 +158,31 @@ public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
   }
 
 
-  private static double deltaY(List<Point2> centerPositions) {
+  private static double integralY(List<Point2> centerPositions) {
     double[] yList = centerPositions.stream().mapToDouble((p) -> p.y).toArray();
     double previous = yList[0];
     double value = 0;
     for (double c : yList
     ) {
+      value = value + c - previous;
+      previous = c;
+    }
+    return value;
+  }
+
+  //could have used the above function --ali
+  private static double absIntegralX(List<Point2> centerPositions) {
+    double[] xList = centerPositions.stream().mapToDouble((p) -> p.x).toArray();
+    double previous = xList[0];
+    double value = 0;
+    for (double c : xList
+    ) {
       value = value + Math.abs(c - previous);
       previous = c;
     }
     return value;
-
   }
+
 
   private static double[][] randomTerrain(int n, double length, double peak, double borderHeight, Random random) {
     double[] xs = new double[n + 2];
