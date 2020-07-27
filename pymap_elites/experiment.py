@@ -26,7 +26,7 @@ def vsr_simulate(params):
         freq_list.append(params[p2_count] MODIFIED TO FIT FREQ RANGE)
         p2_count += 3
     while (p3_count < len(params)):
-        phase_list.append(params[p3_count] MODIFIED TO FIT -720,720)
+        phase_list.append(params[p3_count] * 1440 - 720) #fits it to -720, 720
 
     all_vox_string = ""
     for i in range(0,len(positions)-1):
