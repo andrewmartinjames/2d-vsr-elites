@@ -15,8 +15,16 @@ import map_elites.common as cm_map_elites
 
 def vsr_simulate(params):
     #### PARAMS FOR SYSTEM INPUT, NEED TO CHANGE SO THAT vsr_simulate(params) -> needed inputs
-    x_pos = 0
-    y_pos = 0
+
+    # for each voxel:
+    #   vox_string = str(x_pos) + ',' + str (y_pos) + params_to_[0]
+    #
+
+
+
+
+    x_pos = params[0]
+    y_pos = params0
     amp = 1
     freq = 1
     phase = 0
@@ -70,4 +78,4 @@ px["iso_sigma"] = 0.01,
 px["line_sigma"] = 0.2
 
 
-archive = cvt_map_elites.compute(2, 10, vsr_simulate, n_niches=10000, max_evals=1e6, log_file=open('cvt.dat', 'w'), params=px)
+archive = cvt_map_elites.compute(2, NUMBEROFDIMENSIONS, vsr_simulate, n_niches=10000, max_evals=1e6, log_file=open('cvt.dat', 'w'), params=px)
