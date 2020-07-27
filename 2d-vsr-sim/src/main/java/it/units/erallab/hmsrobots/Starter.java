@@ -50,8 +50,8 @@ public class Starter {
         20,
         Locomotion.createTerrain("flat"),
         Lists.newArrayList(
-            Locomotion.Metric.TRAVEL_X_VELOCITY,
-            Locomotion.Metric.RELATIVE_CONTROL_POWER
+            Locomotion.Metric.DELTA_Theta,
+            Locomotion.Metric.DELTA_X
         ),
         new Settings()
     );

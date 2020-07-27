@@ -25,8 +25,17 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d54cfd5-762d-4366-8f3d-9e331e367a48" name="Default Changelist" comment="">
+    <list default="true" id="6d54cfd5-762d-4366-8f3d-9e331e367a48" name="Default Changelist" comment="parsed the java output and made small change on locomotion.">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2d-vsr-sim/.idea/2dhmsr.iml" beforeDir="false" afterPath="$PROJECT_DIR$/2d-vsr-sim/.idea/2dhmsr.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2d-vsr-sim/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/2d-vsr-sim/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2d-vsr-sim/.idea/libraries/Maven__com_google_guava_guava_19_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2d-vsr-sim/.idea/libraries/Maven__commons_beanutils_commons_beanutils_1_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2d-vsr-sim/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/2d-vsr-sim/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/Starter.java" beforeDir="false" afterPath="$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/Starter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/tasks/Locomotion.java" beforeDir="false" afterPath="$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/tasks/Locomotion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pymap_elites/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pymap_elites/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/classes/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -39,16 +48,41 @@
   <component name="CodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/tasks/Locomotion.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="139" column="16" selection-end-line="215" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#2077#2078#0" expanded="true" />
+                <element signature="e#2119#2120#0" expanded="true" />
+                <element signature="e#2156#2157#0" expanded="true" />
+                <element signature="e#2187#2188#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/Starter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="136">
+              <caret line="51" column="27" lean-forward="true" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/FineLocomotionStarter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="151">
-              <caret line="79" column="16" lean-forward="true" selection-start-line="79" selection-start-column="16" selection-end-line="79" selection-end-column="16" />
-              <folding>
-                <element signature="e#0#6395#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="1054">
+              <caret line="99" column="42" selection-start-line="99" selection-start-column="42" selection-end-line="99" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -111,6 +145,14 @@
       </branch-storage>
     </excluded-from-favorite>
   </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/FineLocomotionStarter.java" />
+        <option value="$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/tasks/Locomotion.java" />
+      </list>
+    </option>
+  </component>
   <component name="MavenImportPreferences">
     <option name="importingSettings">
       <MavenImportingSettings>
@@ -120,11 +162,11 @@
       </MavenImportingSettings>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="-10" />
-    <option name="y" value="-10" />
-    <option name="width" value="1940" />
-    <option name="height" value="1050" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-1928" />
+    <option name="y" value="-129" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectId" id="1a36QVw8CEDRaOGuilSdVLjNeh7" />
   <component name="ProjectLevelVcsManager">
@@ -140,29 +182,29 @@
           <expand>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
               <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
               <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
               <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
               <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
@@ -170,7 +212,7 @@
             </path>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
               <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
@@ -179,7 +221,7 @@
             </path>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
               <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
@@ -189,7 +231,7 @@
             </path>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
               <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
@@ -200,7 +242,7 @@
             </path>
             <path>
               <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
-              <item name="2dsoro" type="462c0819:PsiDirectoryNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
               <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
@@ -209,6 +251,19 @@
               <item name="units" type="462c0819:PsiDirectoryNode" />
               <item name="erallab" type="462c0819:PsiDirectoryNode" />
               <item name="hmsrobots" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TwoDimHighlyModularSoftRobots" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ali-andrew" type="462c0819:PsiDirectoryNode" />
+              <item name="2d-vsr-sim" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="it" type="462c0819:PsiDirectoryNode" />
+              <item name="units" type="462c0819:PsiDirectoryNode" />
+              <item name="erallab" type="462c0819:PsiDirectoryNode" />
+              <item name="hmsrobots" type="462c0819:PsiDirectoryNode" />
+              <item name="tasks" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -230,8 +285,8 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/src/main/java/it/units/erallab/hmsrobots/core/controllers" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/assets" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
@@ -250,6 +305,7 @@
       <recent name="it.units.erallab.hmsrobots.sensors" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\ali-andrew\2d-vsr-sim\src\main\java\it\units\erallab\hmsrobots" />
       <recent name="$PROJECT_DIR$/assets" />
     </key>
   </component>
@@ -311,7 +367,9 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Starter" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="Starter" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="14 (4)" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="it.units.erallab.hmsrobots.Starter" />
       <module name="2dhmsr" />
       <extension name="coverage">
@@ -337,9 +395,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.Starter" />
+      <item itemvalue="Application.GraphicsDrawer" />
+      <item itemvalue="Application.Robot" />
+      <item itemvalue="Application.SequentialBreakingController" />
+      <item itemvalue="Application.Vox" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Starter" />
         <item itemvalue="Application.SequentialBreakingController" />
         <item itemvalue="Application.GraphicsDrawer" />
         <item itemvalue="Application.Robot" />
@@ -540,7 +604,28 @@
       <option name="project" value="LOCAL" />
       <updated>1595440660438</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="parsed the java output and made small change on locomotion.">
+      <created>1595626341161</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1595626341161</updated>
+    </task>
+    <task id="LOCAL-00028" summary="parsed the java output and made small change on locomotion.">
+      <created>1595626685052</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1595626685052</updated>
+    </task>
+    <task id="LOCAL-00029" summary="parsed the java output and made small change on locomotion.">
+      <created>1595626862538</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1595626862538</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TodoView">
@@ -553,34 +638,35 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1551" height="839" extended-state="0" />
+    <frame x="-1928" y="-129" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Image Layers" />
-      <window_info id="Designer" />
-      <window_info id="UI Designer" />
-      <window_info id="Capture Tool" />
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24949698" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20575693" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Version Control" weight="0.32956153" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32936078" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" visible="true" weight="0.32956153" />
-      <window_info anchor="right" id="Palette" />
-      <window_info anchor="right" id="Theme Preview" />
-      <window_info anchor="right" id="Capture Analysis" />
-      <window_info anchor="right" id="Palette&#9;" />
-      <window_info anchor="right" id="Maven" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32909605" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32909605" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32909605" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.32936078" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Theme Preview" order="5" />
+      <window_info anchor="right" id="Maven" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
     </layout>
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -667,7 +753,8 @@
     <MESSAGE value="Improved README.md." />
     <MESSAGE value="Small correction." />
     <MESSAGE value="Merged Andrew's mapelite and my metric, classes with new version" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merged Andrew's mapelite and my metric, classes with new version" />
+    <MESSAGE value="parsed the java output and made small change on locomotion." />
+    <option name="LAST_COMMIT_MESSAGE" value="parsed the java output and made small change on locomotion." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
@@ -785,15 +872,110 @@
     <state x="738" y="293" width="770" height="777" key="search.everywhere.popup/56.27.2136.1206/2192.0.1920.1080@56.27.2136.1206" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/Locomotion.java" />
     <entry file="file://$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/FineLocomotionStarter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="151">
-          <caret line="79" column="16" lean-forward="true" selection-start-line="79" selection-start-column="16" selection-end-line="79" selection-end-column="16" />
+        <state relative-caret-position="1054">
+          <caret line="99" column="42" selection-start-line="99" selection-start-column="42" selection-end-line="99" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/Starter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="51" column="27" lean-forward="true" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/2d-vsr-sim/src/main/java/it/units/erallab/hmsrobots/tasks/Locomotion.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="139" column="16" selection-end-line="215" />
           <folding>
-            <element signature="e#0#6395#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2077#2078#0" expanded="true" />
+            <element signature="e#2119#2120#0" expanded="true" />
+            <element signature="e#2156#2157#0" expanded="true" />
+            <element signature="e#2187#2188#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>14 (4)</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>2dhmsr</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Maven: com.google.code.findbugs:jsr305:3.0.2</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
