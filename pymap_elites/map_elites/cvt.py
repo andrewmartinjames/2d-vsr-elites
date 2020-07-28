@@ -92,7 +92,6 @@ def compute(dim_map, dim_x, f,
               params['cvt_samples'], params['cvt_use_cache'])
     kdt = KDTree(c, leaf_size=30, metric='euclidean')
     cm.__write_centroids(c)
-
     archive = {} # init archive (empty)
     n_evals = 0 # number of evaluations since the beginning
     b_evals = 0 # number evaluation since the last dump

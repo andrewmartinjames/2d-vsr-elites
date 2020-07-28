@@ -15,29 +15,32 @@ import map_elites.common as cm_map_elites
 def vsr_simulate(params):
     amp_list = []
     freq_list = []
-    phase_list =[]
+    phase_list = []
     p1_count = 0
     p2_count = 1
     p3_count = 2
 
     while (p1_count < len(params)):
-        amp_list.append(params[p1_count]*10) # fits amp to [0,10]
+        amp_list.append(params[p1_count] * 10)  # fits amp to [0,10]
         p1_count += 3
     while (p2_count < len(params)):
-        freq_list.append(params[p2_count] * 10) # fits freq to [0,10]
+        freq_list.append(params[p2_count] * 10)  # fits freq to [0,10]
         p2_count += 3
     while (p3_count < len(params)):
-        phase_list.append(params[p3_count] * 1440 - 720) # fits phase to [-720, 720]
+        phase_list.append(params[p3_count] * 1440 - 720)  # fits phase to [-720, 720]
+        p3_count += 3
 
     all_vox_string = ""
-    for i in range(0,len(positions)-1):
+    for i in range(0, len(positions) - 1):
         coords = positions[i].split(",")
-        all_vox_string += str(coords[0]) + ',' + str(coords[1]) + ',' + str(amp_list[i]) + ',' + str(freq_list[i]) + ',' + str(phase_list[i]) + '\n'
+        all_vox_string += str(coords[0]) + ',' + str(coords[1]) + ',' + str(amp_list[i]) + ',' + str(
+            freq_list[i]) + ',' + str(phase_list[i]) + '\n'
     last_vox = len(positions) - 1
     coords = positions[last_vox].split(",")
-    all_vox_string += str(coords[0]) + ',' + str(coords[1]) + ',' + str(amp_list[last_vox]) + ',' + str(freq_list[last_vox]) + ',' + str(phase_list[last_vox])
+    all_vox_string += str(coords[0]) + ',' + str(coords[1]) + ',' + str(amp_list[last_vox]) + ',' + str(
+        freq_list[last_vox]) + ',' + str(phase_list[last_vox])
 
-    call_string = 'echo "' + all_vox_string + ' | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary ' + terrain + ' ' + init_pos + ' ' + sim_time
+    call_string = 'echo "' + all_vox_string + '" | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary ' + terrain + ' ' + init_pos + ' ' + sim_time
     file = os.popen(call_string)
     output_string = file.read()
     metric_list = output_string.split(",\n")
@@ -48,7 +51,6 @@ def vsr_simulate(params):
 
     fitness = metric_dictionary.get("ABS_INTEGRAL_X")
     description = np.array([metric_dictionary.get("DELTA_X"), metric_dictionary.get("INTEGRAL_Theta")])
-    print("vsr_simulate_hit")
     return fitness, description
 
 
@@ -57,8 +59,10 @@ if __name__ == "__main__":
     vox_file = open(sys.argv[1])
     global positions
     positions = vox_file.readlines()
-    for pos in positions:
-        pos.strip("\n")
+    i = 0
+    while i < len(positions):
+        positions[i] = positions[i].replace("\n", "")
+        i += 1
 
     global terrain
     terrain = str(sys.argv[2])

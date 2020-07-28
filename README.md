@@ -10,23 +10,19 @@ experiment.py takes four arguments:
 3. the starting x position of the robot in that terrain
 4. the time to run each simulation
 
-#### Appropriate Parameter Ranges:
-1. Amplitude: [0,]
-2. Frequency: [0,]
+#### Usage:
+To run an example experiment:
+`python experiment.py example.txt 1,0:1000,100:2000,10 1000 30`
+
+#### Current in-use voxel parameter ranges:
+1. Amplitude: [0,10]
+2. Frequency: [0,10]
 3. Phase: [-720,720]
 
 
 
 ## Citations
 1. Medvet, Bartoli, De Lorenzo, Seriani. "[Design, Validation, and Case Studies of 2D-VSR-Sim, an Optimization-friendly Simulator of 2-D Voxel-based Soft Robots](https://arxiv.org/abs/2001.08617)" arXiv cs.RO: 2001.08617
-```bibtex
-@article{medvet20202d,
-  title={Design, Validation, and Case Studies of 2D-VSR-Sim, an Optimization-friendly Simulator of 2-D Voxel-based Soft Robots},
-  author={Medvet, Eric and Bartoli, Alberto and De Lorenzo, Andrea and Seriani, Stefano},
-  journal={arXiv preprint arXiv:2001.08617},
-  year={2020}
-}
-```
 2. Mouret JB, Clune J. Illuminating search spaces by mapping elites. arXiv preprint arXiv:1504.04909. 2015 Apr 20.
 3. Vassiliades V, Chatzilygeroudis K, Mouret JB. Using centroidal voronoi tessellations to scale up the multi-dimensional archive of phenotypic elites algorithm. IEEE Transactions on Evolutionary Computation. 2017 Aug 3.
 4. Vassiliades V, Mouret JB. Discovering the Elite Hypervolume by Leveraging Interspecies Correlation. Proc. of GECCO. 2018.
