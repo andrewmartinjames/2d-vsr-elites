@@ -1,5 +1,11 @@
 # 2dsoro
-Connecting pymap_elites to 2d-VSR-Sim.
+Connecting Python3 Map-Elites to 2d-VSR-Sim.
+
+#### Dependencies:
+* python3
+* numpy
+* scikit-learn
+* matplotlib
 
 #### experiment.py:
 experiment.py takes four arguments:
@@ -12,12 +18,22 @@ experiment.py takes four arguments:
 
 #### Usage:
 To run an example experiment:
+
 `python experiment.py example.txt 1,0:1000,100:2000,10 1000 30`
 
+(may require `python3` instead of `python` depending on system default)
+
+* `example.txt` contains an example robot description
+* `1,0:1000,100:2000,10` produces a 2000-unit terrain with a small, 100-unit hill with a peak at the map's halfway point
+* `1000` is the starting x-position of the robot, in this case on top of the hill
+* `30` is the length in seconds of each run of the simulation
+
+
 #### Current in-use voxel parameter ranges:
-1. Amplitude: [0,10]
-2. Frequency: [0,10]
-3. Phase: [-720,720]
+Each voxel is independently controlled sinusoidally within the following ranges:
+1. Amplitude: [0,10] - no unit
+2. Frequency: [0,10] - in Hz
+3. Phase: [-720,720] - in 1/2 degree
 
 
 
