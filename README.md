@@ -33,7 +33,7 @@ To run an example experiment:
 Each voxel is independently controlled sinusoidally within the following ranges:
 1. Amplitude: [0,10] - no unit
 2. Frequency: [0,10] - in Hz
-3. Phase: [-720,720] - in 1/2 degree
+3. Phase: [0,720] - in 1/2 degree
 
 
 

@@ -27,7 +27,7 @@ def vsr_simulate(params):
         freq_list.append(params[p2_count] * 10)  # fits freq to [0,10]
         p2_count += 3
     while (p3_count < len(params)):
-        phase_list.append(params[p3_count] * 1440 - 720)  # fits phase to [-720, 720]
+        phase_list.append(params[p3_count] * 720)  # fits phase to [0, 720]
         p3_count += 3
 
     all_vox_string = ""
