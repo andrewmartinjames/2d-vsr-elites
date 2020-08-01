@@ -27,12 +27,14 @@ import it.units.erallab.hmsrobots.util.SerializableFunction;
 import it.units.erallab.hmsrobots.viewers.GridEpisodeRunner;
 import it.units.erallab.hmsrobots.viewers.GridOnlineViewer;
 import it.units.erallab.hmsrobots.viewers.SnapshotListener;
+import it.units.erallab.hmsrobots.viewers.GridFileWriter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.dyn4j.dynamics.Settings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +49,7 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class FineLocomotionStarter {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     //stdin: description of the robot: grid x, grid y, amplitude, frequency, phase (one line per voxel, ended by an empty line)
     //stout: time, x, y, area ratio (one line per voxel)
     //args: type (csv/gui/summary), terrain string, starting y, simulation time
@@ -146,6 +148,26 @@ public class FineLocomotionStarter {
           executor
       );
       runner.run();
+    } else if (args[0].equals("video")) {
+    	String fileNamePrefix = args[4];
+    	String fileName = fileNamePrefix + ".mov";
+    	ScheduledExecutorService uiExecutor = Executors.newScheduledThreadPool(4);
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    	GridFileWriter fileWriter = new GridFileWriter(
+    			480, 360, 30, 
+    			new File(fileName), 
+    			Grid.create(1, 1, "Simulation"), 
+    			uiExecutor
+    			);
+    	GridEpisodeRunner<Robot<?>> runner = new GridEpisodeRunner<>(
+    			Grid.create(1, 1, Pair.of("Robot", robot)),
+    	        locomotion,
+    	        fileWriter,
+    	        executor
+    			);
+    	runner.run();
+    	executor.shutdownNow();
+    	uiExecutor.shutdownNow();
     } else {
       List<Double> result = locomotion.apply(robot);
       System.out.printf("%s=",locomotion.getMetrics().get(0));
