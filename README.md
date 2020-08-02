@@ -7,7 +7,7 @@ Connecting Python3 Map-Elites to 2d-VSR-Sim.
 * scikit-learn
 * matplotlib
 
-#### experiment.py:
+## `experiment.py`:
 experiment.py takes four arguments:
 1. a text file containing the position data for each voxel included in the robot
   * each voxel is described as x_pos,y_pos where x_pos and y_pos are integers starting at 0 that describe the position of the voxel within the full robot
@@ -36,6 +36,20 @@ Each voxel is independently controlled sinusoidally within the following ranges:
 3. Phase: [0,720] - in 1/2 degree
 
 
+#### Archive format:
+Archive files are formatted with information about one elite per line, as follows:
+
+`fitness centroid_x_val centroid_y_val description_x_val description_theta_val param_0, param_1 ...`
+
+where all remaining values in the line are parameter inputs to the simulation function.
+
+## `make_videos.py`:
+#### Usage:
+`make_videos.py` takes 5 arguments, and requires that an archive file already be generated. The same arguments used for `experiment.py` should be used in `make_videos.py` to produce useful results. Videos take a while to save, and are named after the fitness value in the archive of the elite they correspond to. The call for `make_videos` is:
+
+`python make_videos.py example.txt 1,0:1000,100:2000,10 1000 30 archive_500.dat`
+
+using all the same arguments as `experiment.py` with the addition of the archive file whose elites should be turned into videos. If only some of the elites need to be viewed, an abbreviated version of the archive can be saved with only the lines containing the desired elites.
 
 ## Citations
 1. Medvet, Bartoli, De Lorenzo, Seriani. "[Design, Validation, and Case Studies of 2D-VSR-Sim, an Optimization-friendly Simulator of 2-D Voxel-based Soft Robots](https://arxiv.org/abs/2001.08617)" arXiv cs.RO: 2001.08617
