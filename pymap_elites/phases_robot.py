@@ -14,7 +14,7 @@ import map_elites.common as cm_map_elites
 
 def vsr_simulate(params):
     amp = params[0] * 10    # fits amp to [0,10]
-    freq = params[1] * 10   # fits freq to [0,10]
+    freq = params[1] * 4   # fits freq to [0,10]
     phase_list = []
 
     for count in range(2,len(params)):
@@ -48,16 +48,20 @@ ar_positions example:['0,0', '0,1', '1,1', '2,1', '2,0']
 def col_positions(ar_positions):
     col_list=[]
     copy_position=ar_positions.copy()
+    to_remove = []
     for str_cord1 in ar_positions:
         cord1= str_cord1.split(",")
         col=[]
-        for str_cord2 in copy_position:
-            cord2= str_cord2.split(",")
+        for i in range (0,len(copy_position)):
+            cord2= copy_position[i].split(",")
             if cord1[0]==cord2[0]:
-                col.append(str_cord2)
-                copy_position.remove(str_cord2)
-        col_list.append(col)
+                col.append(copy_position[i])
+        for rm in col:
+            copy_position.remove(rm)
+        if len(col) > 0:
+            col_list.append(col)
     return col_list
+
 
 
 if __name__ == "__main__":
