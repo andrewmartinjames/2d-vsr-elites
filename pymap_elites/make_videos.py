@@ -20,7 +20,7 @@ def vsr_video(params, title):
         amp_list.append(params[p1_count] * 10)  # fits amp to [0,10]
         p1_count += 3
     while (p2_count < len(params)):
-        freq_list.append(params[p2_count] * 10)  # fits freq to [0,10]
+        freq_list.append(params[p2_count] * 4)  # fits freq to [0,10]
         p2_count += 3
     while (p3_count < len(params)):
         phase_list.append(params[p3_count] * 720)  # fits phase to [0, 720]
