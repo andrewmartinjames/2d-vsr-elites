@@ -60,11 +60,6 @@ def col_positions(ar_positions):
     return col_list
 
 
-
-
-
-
-
 if __name__ == "__main__":
 
     vox_file = open(sys.argv[1])
