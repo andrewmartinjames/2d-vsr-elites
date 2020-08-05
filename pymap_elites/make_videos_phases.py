@@ -10,7 +10,7 @@ import map_elites.common as cm_map_elites
 
 def vsr_video(params, title):
     amp = params[0] * 10  # fits amp to [0,10]
-    freq = params[1] * 10  # fits freq to [0,10]
+    freq = params[1] * 4  # fits freq to [0,10]
     phase_list = []
 
     for count in range(2, len(params)):
