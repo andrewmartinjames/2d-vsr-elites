@@ -35,7 +35,7 @@ def vsr_simulate(params):
         entry = metric.split("=")
         metric_dictionary[entry[0]] = float(entry[1])
 
-    fitness = metric_dictionary.get("ABS_INTEGRAL_Y")
+    fitness = metric_dictionary.get("DELTA_X")
     description = np.array([(metric_dictionary.get("DELTA_X")+100)/200, metric_dictionary.get("ABS_INTEGRAL_Y")/200])
     return fitness, description
 
