@@ -8,6 +8,8 @@ Connecting Python3 Map-Elites to 2d-VSR-Sim.
 * matplotlib
 
 ## `experiment.py`:
+***Located in fps_experiment (fps = full parameter space)***
+
 experiment.py takes four arguments:
 1. a text file containing the position data for each voxel included in the robot
   * each voxel is described as x_pos,y_pos where x_pos and y_pos are integers starting at 0 that describe the position of the voxel within the full robot
@@ -17,9 +19,9 @@ experiment.py takes four arguments:
 4. the time to run each simulation
 
 #### Usage:
-To run an example experiment:
+To run an example experiment from the pymap_elites folder:
 
-`python experiment.py example.txt 1,0:1000,100:2000,10 1000 30`
+`python fps_experiment/experiment.py robots/example.txt 1,0:1000,100:2000,10 1000 30`
 
 (may require `python3` instead of `python` depending on system default)
 
@@ -32,8 +34,8 @@ To run an example experiment:
 #### Current in-use voxel parameter ranges:
 Each voxel is independently controlled sinusoidally within the following ranges:
 1. Amplitude: [0,10] - no unit
-2. Frequency: [0,10] - in Hz
-3. Phase: [0,720] - in 1/2 degree
+2. Frequency: [0,4] - in Hz
+3. Phase: [0,720] - in 1/2 degree increments
 
 
 #### Archive format:
@@ -47,9 +49,18 @@ where all remaining values in the line are parameter inputs to the simulation fu
 #### Usage:
 `make_videos.py` takes 5 arguments, and requires that an archive file already be generated. The same arguments used for `experiment.py` should be used in `make_videos.py` to produce useful results. Videos take a while to save, and are named after the fitness value in the archive of the elite they correspond to. The call for `make_videos` is:
 
-`python make_videos.py example.txt 1,0:1000,100:2000,10 1000 30 archive_500.dat`
+`python fps_experiment/make_videos.py robots/example.txt 1,0:1000,100:2000,10 1000 30 archive_500.dat`
 
 using all the same arguments as `experiment.py` with the addition of the archive file whose elites should be turned into videos. If only some of the elites need to be viewed, an abbreviated version of the archive can be saved with only the lines containing the desired elites.
+
+## `phases_robot.py`
+***Located in rps_phases (rps = reduced parameter space)***
+
+A reduced parameter-space implementation of `experiment.py` wherein all voxels have the same amplitude and frequency (though amp & freq are still varied per-run). Typically produces elite behaviors with greater x-displacement in less time.
+#### Usage:
+Same syntax as `experiment.py` but with `rps_phases/phases_robot.py` instead
+#### Videos:
+Use `rps_phases/make_videos_phases.py` instead of `fps_experiment/make_videos.py`, but with same call syntax. Using `make_videos.py` will produce incorrect results since it uses the higher parameter space of `experiment.py`.
 
 ## Citations
 1. Medvet, Bartoli, De Lorenzo, Seriani. "[Design, Validation, and Case Studies of 2D-VSR-Sim, an Optimization-friendly Simulator of 2-D Voxel-based Soft Robots](https://arxiv.org/abs/2001.08617)" arXiv cs.RO: 2001.08617
