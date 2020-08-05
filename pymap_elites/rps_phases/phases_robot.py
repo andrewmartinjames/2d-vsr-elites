@@ -1,11 +1,10 @@
 # based on rastrigin from pymap_elites
 # rewritten by Andrew James
 
-import sys, os, subprocess
+import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import numpy as np
-import math
 import map_elites.cvt as cvt_map_elites
 import map_elites.common as cm_map_elites
 
@@ -36,8 +35,8 @@ def vsr_simulate(params):
         entry = metric.split("=")
         metric_dictionary[entry[0]] = float(entry[1])
 
-    fitness = metric_dictionary.get("ABS_INTEGRAL_X")
-    description = np.array([metric_dictionary.get("DELTA_X"), metric_dictionary.get("INTEGRAL_Theta")])
+    fitness = metric_dictionary.get("ABS_INTEGRAL_Y")
+    description = np.array([(metric_dictionary.get("DELTA_X")+100)/200, metric_dictionary.get("ABS_INTEGRAL_Y")/200])
     return fitness, description
 
 
@@ -86,7 +85,7 @@ if __name__ == "__main__":
     px = cm_map_elites.default_params.copy()
 
     # more of this -> higher-quality CVT
-    px["cvt_samples"] = 25000
+    px["cvt_samples"] = 100000
 
     # we evaluate in batches to parallelize
     px["batch_size"] = 20
@@ -98,10 +97,10 @@ if __name__ == "__main__":
     px["random_init_batch"] = 20
 
     # when to write results (one generation = one batch)
-    px["dump_period"] = 10
+    px["dump_period"] = 20
 
-    #### no parallelization for now, it might break shit
-    px["parallel"] = False
+    ####
+    px["parallel"] = True
 
     # do we cache the result of CVT and reuse?
     px["cvt_use_cache"] = True
@@ -114,4 +113,4 @@ if __name__ == "__main__":
     px["iso_sigma"] = 0.01,
     px["line_sigma"] = 0.2
 
-    archive = cvt_map_elites.compute(2, len(col_list)+2, vsr_simulate, n_niches=25, max_evals=500, log_file=open('cvt.dat', 'w'), params=px)
+    archive = cvt_map_elites.compute(2, len(col_list)+2, vsr_simulate, n_niches=50, max_evals=500, log_file=open('cvt.dat', 'w'), params=px)

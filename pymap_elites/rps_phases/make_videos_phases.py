@@ -1,16 +1,12 @@
 # written by Andrew James
 # converts archive file to videos of elites
 
-import sys, os, subprocess
+import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import numpy as np
-import math
-import map_elites.cvt as cvt_map_elites
-import map_elites.common as cm_map_elites
 
 def vsr_video(params, title):
     amp = params[0] * 10  # fits amp to [0,10]
-    freq = params[1] * 10  # fits freq to [0,10]
+    freq = params[1] * 4  # fits freq to [0,10]
     phase_list = []
 
     for count in range(2, len(params)):

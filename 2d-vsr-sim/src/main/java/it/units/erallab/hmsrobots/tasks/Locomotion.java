@@ -47,7 +47,8 @@ public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
     INTEGRAL_Y(true),
     INTEGRAL_Theta(true),
     DELTA_X(true),
-    ABS_INTEGRAL_X(true);
+    ABS_INTEGRAL_X(true),
+	ABS_INTEGRAL_Y(true);
 
 
     private final boolean toMinimize;
@@ -138,6 +139,9 @@ public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
         case ABS_INTEGRAL_X:
           value=absIntegralX(centerPositions);
           break;
+        case ABS_INTEGRAL_Y:
+          value=absIntegralY(centerPositions);
+          break;
       }
       results.add(value);
     }
@@ -182,6 +186,18 @@ public class Locomotion extends AbstractTask<Robot<?>, List<Double>> {
     }
     return value;
   }
+  
+  private static double absIntegralY(List<Point2> centerPositions) {
+	    double[] yList = centerPositions.stream().mapToDouble((p) -> p.y).toArray();
+	    double previous = yList[0];
+	    double value = 0;
+	    for (double c : yList
+	    ) {
+	      value = value + Math.abs(c - previous);
+	      previous = c;
+	    }
+	    return value;
+	  }
 
 
   private static double[][] randomTerrain(int n, double length, double peak, double borderHeight, Random random) {
