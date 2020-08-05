@@ -2,10 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="477fadf5-10c7-47d3-847a-96b297fbac86" name="Default Changelist" comment="">
+<<<<<<< Updated upstream
       <change afterPath="$PROJECT_DIR$/make_videos_phases.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/phases_debug.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_experiment.py" beforeDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/experiment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/make_videos.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/make_videos_phases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/phases_robot.py" beforeDir="false" />
+>>>>>>> Stashed changes
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,8 +41,9 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/phases_robot.py">
+        <entry file="file://$PROJECT_DIR$/map_elites/common.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
             <state relative-caret-position="189">
               <caret line="22" column="23" lean-forward="true" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
             </state>
@@ -86,6 +94,10 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="118">
               <caret line="18" column="35" selection-start-line="18" selection-start-column="35" selection-end-line="18" selection-end-column="35" />
+=======
+            <state relative-caret-position="345">
+              <caret line="23" column="2" lean-forward="true" selection-start-line="23" selection-start-column="2" selection-end-line="23" selection-end-column="2" />
+>>>>>>> Stashed changes
             </state>
           </provider>
         </entry>
@@ -142,6 +154,11 @@
             <path>
               <item name="pymap_elites" type="b2602c69:ProjectViewProjectNode" />
               <item name="pymap_elites" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="pymap_elites" type="b2602c69:ProjectViewProjectNode" />
+              <item name="pymap_elites" type="462c0819:PsiDirectoryNode" />
+              <item name="fps_experiment" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="pymap_elites" type="b2602c69:ProjectViewProjectNode" />
@@ -552,6 +569,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< Updated upstream
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="177">
@@ -560,6 +578,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/phases_debug.py">
+=======
+    <entry file="file://$PROJECT_DIR$/fps_experiment/experiment.py">
+>>>>>>> Stashed changes
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
           <caret line="47" selection-start-line="47" selection-end-line="63" />
@@ -577,6 +598,16 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
           <caret line="22" column="23" lean-forward="true" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/robots/phases_robot.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/map_elites/common.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="2" lean-forward="true" selection-start-line="23" selection-start-column="2" selection-end-line="23" selection-end-column="2" />
         </state>
       </provider>
     </entry>
