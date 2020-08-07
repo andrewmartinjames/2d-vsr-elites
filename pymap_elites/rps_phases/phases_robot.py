@@ -26,7 +26,7 @@ def vsr_simulate(params):
             all_vox_string += str(coords[0]) + ',' + str(coords[1]) + ',' + str(amp) + ',' + str(
                 freq) + ',' + str(phase_list[i]) + '\n'
 
-    call_string = 'echo "' + all_vox_string + '" | java -cp ../2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary ' + terrain + ' ' + init_pos + ' ' + sim_time
+    call_string = 'echo "' + all_vox_string + '" | java -cp 2dhmsr.jar it.units.erallab.hmsrobots.FineLocomotionStarter summary ' + terrain + ' ' + init_pos + ' ' + sim_time
     file = os.popen(call_string)
     output_string = file.read()
     metric_list = output_string.split(",\n")
