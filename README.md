@@ -1,5 +1,7 @@
-# 2dsoro
-A package connecting Python3 Map-Elites to 2d-VSR-Sim.
+# 2d-vsr-elites
+A package connecting Python3 Map-Elites to 2d-VSR-Sim for fast prototyping of simple 2d voxel robots. 
+
+This was a summer research project by Andrew James and [Ali Ahmed Khan](https://github.com/Ahmed4812) for Prof. John Rieffel's lab at Union College. It's based on Eric Medvet's [2d-vsr-sim](https://github.com/ericmedvet/2dhmsr) and Jean-Baptiste Mouret (& the Resibots team)'s [pymap_elites](https://github.com/resibots/pymap_elites). Further relevant citations are at the bottom of the readme.
 
 ## **Introduction**
 
