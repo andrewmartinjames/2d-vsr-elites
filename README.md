@@ -1,204 +1,126 @@
-# 2D-VSR-Sim
-2D-VSR-Sim is a Java framework for experimenting with a 2-D version of the *voxel-based soft robots* (VSRs) [1].
+# 2dsoro
+A package connecting Python3 Map-Elites to 2d-VSR-Sim.
 
-If you use this software, please cite: Medvet, Bartoli, De Lorenzo, Seriani. "[Design, Validation, and Case Studies of 2D-VSR-Sim, an Optimization-friendly Simulator of 2-D Voxel-based Soft Robots](https://arxiv.org/abs/2001.08617)" arXiv cs.RO: 2001.08617
-```bibtex
-@article{medvet20202d,
-  title={Design, Validation, and Case Studies of 2D-VSR-Sim, an Optimization-friendly Simulator of 2-D Voxel-based Soft Robots},
-  author={Medvet, Eric and Bartoli, Alberto and De Lorenzo, Andrea and Seriani, Stefano},
-  journal={arXiv preprint arXiv:2001.08617},
-  year={2020}
-}
+## **Introduction**
+
+#### Dependencies:
+* python3
+* numpy
+* scikit-learn
+* matplotlib
+
+#### Structure:
+2dsoro is organized into folders based on the two packages it connects (tree only shows files relevant to running and creating new experiments):
 ```
-
-VSRs are composed of many simple soft blocks (called *voxels*) that can change their volumes: the way voxels are assembled defines the *body* of the VSR, whereas the law according to which voxels change their volume over the time defines the *brain* of the VSR.
-Design of VSRs body and brain can be automatized by means of optimization techniques.
-
-**2D-VSR-Sim is an optimization-friendly VSR simulator** that focuses on two key steps of optimization: what to optimize and towards which goal. It offers a consistent interface to the different components (e.g., body, brain, sensors, specific mechanisms for control signal propagation) of a VSR which are suitable for optimization and to the task the VSR is requested to perform (e.g., locomotion, grasping of moving objects).
-2D-VSR-Sim **is not** a software for doing the actual optimization. As a consequence, it leaves users (i.e., researchers and practitioners) great freedom on how to optimize: different techniques, e.g., evolutionary computation or reinforcement learning, can be used.
-
-## VSR model in brief
-All the details of the model can be found in [2].
-In brief, a voxel is a soft 2-D block, i.e., a deformable square modeled with four rigid bodies (square masses), a number of spring-damper systems that constitute a scaffolding, and a number of ropes. A VSR is modeled as a collection of voxels organized in a 2-D grid, each voxel in the grid being rigidly connected with the voxel above, below, on the left, and on the right. The way a VSR behaves is determined by a *controller* that may exploit the readings of a number of *sensors* that each voxel may be equipped with. Most of the properties of the VSR model are **configurable by the user**.
-2D-VSR-Sim exploits an existing physics engine, [dyn4j](http://www.dyn4j.org/), for solving the mechanical model defined by a VSR subjected to the forces caused by the actuation determined by its controller and by the interaction with other bodies (typically, the ground).
-
-A graphical representation of a moving VSR:
-![A graphical representation of a moving VSR](/assets/frames.png)
-
-## Using the sofware
-2D-VSR-Sim is meant to be used within or together with another software that performs the actual optimization.
-This software is organized as a Java package containing the classes and the interfaces that represent the VSR model and related concepts.
-The voxel is represented by the `Voxel` class and its parameters, together with its sensors, can be specified using the `Voxel.Description` class. The VSR is represented by the `Robot` class; a description of a VSR, that can be used for building a VSR accordingly, is represented by the `Robot.Description` class.
-A controller is represented by the interface `Controller`, a functional interface that takes ad input the sensor readings and gives as outputs the control values (one for each voxel).
-A task, i.e., some activity whose degree of accomplishment can be evaluated quantitatively according to one or more indexes, is described by the interface `Task`.
-
-2D-VSR-Sim provides a mechanism for keeping track of an ongoing simulation based on the observer pattern. A `SnapshotListener` interface represents the observer that is notified of progresses in the simulation, each in the form of a `Snapshot`: the latter is an immutable representation of the state of all the objects (e.g., positions of voxels, values of their sensor readings) in the simulation at a given time. There are two listeners implementing this interface:
- - `GridOnlineViewer` renders a visualization of the simulated world within a GUI;
- - `GridFileWriter` produces a video file.
-
-Both can process multiple simulations together, organized in a grid. The possibility of visualizing many simulations together can be useful, for example, for comparing different stages of an optimization.
-
-The GUI for `GridOnlineViewer`:
-![The GUI of the simulation viewer](/assets/gui.png)
-On top of the GUI, a set of UI controls allows the user to customize the visualization with immediate effect. Sensor readings can be visualized as well as voxels SDSs and masses.
-
-### Sample code
-A brief fragment of code using for setting up a VSR, testing it in the task of locomotion and saving an image with a few frames of the resulting behavior.
-This VSR is composed of voxel of two different materials that are actuated with a periodic sinusoidal signal whose phase changes along the x-direction of the robot. 
-```java
-final Locomotion locomotion = new Locomotion(
-    20,
-    Locomotion.createTerrain("flat"),
-    Lists.newArrayList(
-        Locomotion.Metric.TRAVEL_X_VELOCITY,
-        Locomotion.Metric.RELATIVE_CONTROL_POWER
-    ),
-    new Settings()
-);
-final ControllableVoxel hardMaterialVoxel = new ControllableVoxel(
-    Voxel.SIDE_LENGTH,
-    Voxel.MASS_SIDE_LENGTH_RATIO,
-    50d,
-    Voxel.SPRING_D,
-    Voxel.MASS_LINEAR_DAMPING,
-    Voxel.MASS_ANGULAR_DAMPING,
-    Voxel.FRICTION,
-    Voxel.RESTITUTION,
-    Voxel.MASS,
-    Voxel.LIMIT_CONTRACTION_FLAG,
-    Voxel.MASS_COLLISION_FLAG,
-    Voxel.AREA_RATIO_MAX_DELTA,
-    Voxel.SPRING_SCAFFOLDINGS,
-    ControllableVoxel.MAX_FORCE,
-    ControllableVoxel.ForceMethod.DISTANCE
-);
-final ControllableVoxel softMaterialVoxel = new ControllableVoxel(
-    Voxel.SIDE_LENGTH,
-    Voxel.MASS_SIDE_LENGTH_RATIO,
-    5d,
-    Voxel.SPRING_D,
-    Voxel.MASS_LINEAR_DAMPING,
-    Voxel.MASS_ANGULAR_DAMPING,
-    Voxel.FRICTION,
-    Voxel.RESTITUTION,
-    Voxel.MASS,
-    Voxel.LIMIT_CONTRACTION_FLAG,
-    Voxel.MASS_COLLISION_FLAG,
-    Voxel.AREA_RATIO_MAX_DELTA,
-    EnumSet.of(Voxel.SpringScaffolding.SIDE_EXTERNAL, Voxel.SpringScaffolding.CENTRAL_CROSS),
-    ControllableVoxel.MAX_FORCE,
-    ControllableVoxel.ForceMethod.DISTANCE
-);
-int w = 20;
-int h = 5;
-Robot robot = new Robot(
-    new TimeFunctions(Grid.create(
-        w, h,
-        (x, y) -> (Double t) -> Math.sin(-2 * Math.PI * t + Math.PI * ((double) x / (double) w))
-    )),
-    Grid.create(
-        w, h,
-        (x, y) -> (y == 0) ? SerializationUtils.clone(hardMaterialVoxel) : SerializationUtils.clone(softMaterialVoxel)
-    )
-);
-FramesFileWriter framesFileWriter = new FramesFileWriter(
-    5, 5.5, 0.1, 300, 200, FramesFileWriter.Direction.HORIZONTAL,
-    new File(pathToFile),
-    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-);
-List<Double> result = locomotion.apply(robot, framesFileWriter);
-framesFileWriter.flush();
-System.out.println("Outcome: " + result);
+├── 2d-vsr-sim
+│   └── src/main/java/it/units/erallab/hmsrobots
+│       ├── FineLocomotionStarter.java              
+│       └── tasks
+│           └── Locomotion.java                       
+└── pymap_elites
+    ├── 2dhmsr.jar
+    ├── afprobot
+    │   ├── afp_robot.py
+    │   └── make_videos.py
+    ├── phasesrobot
+    │   ├── make_videos_phases.py
+    │   └── phases_robot.py
+    ├── plot
+    │   └── plot_2d_map.py
+    └── robotdescriptions
+        ├── example.txt
+        ├── horizontal.txt
+        ├── longBody_smallLegs.txt
+        ├── rect.txt
+        ├── spikeball.txt
+        └── vertical.txt
 ```
+The Java package `2d-vsr-sim` is compiled into `2dhmsr.jar` in pymap_elites with `FineLocomotionStarter` configured as the launch class. This class controls individual simulations of robots by the package, with several possible interfaces, including output of performance metrics, individual voxel positions, GUI windows, and saved video files.
 
-#### Optimization examples: optimize phases
+2dsoro's implementation of `pymap_elites` uses two modules for each type of desired evolutionary experiment: a module that runs the evolutionary algorithm and saves the resulting behaviors to an archive, and a module that takes that archive file and the corresponding input parameters and creates videos of the simulation runs.
 
-This piece of code shows a method for assessing a VSR whose voxels are actuated with a sinusoidal signal with different phases given the vector of phases.
-This method might be the one being called by an external optimization software.
-In this example, the VSR is a 10x4 worm that is assessed on locomotion on a flat terrain: the single objective is the traveled distance.
+`afprobot` and `phasesrobot` are currently the two types of experiments available, each described below. `afp_robot` and `phases_robot` are their respective evolutionary modules, while `make_videos` and `make_videos_phases` are their video modules.
 
-```java
-public static double assessOnLocomotion(double[] phases) {
-    // set robot shape and sensors
-    Grid<ControllableVoxel> voxels = Grid.create(10, 4, (x, y) -> new ControllableVoxel());
-    // set controller
-    double f = 1d;
-    Controller<ControllableVoxel> controller = new TimeFunctions(Grid.create(
-        voxels.getW(),
-        voxels.getH(),
-        (x, y) -> (t) -> Math.sin(-2 * Math.PI * f * t + Math.PI * phases[(x + (int) Math.floor(y / voxels.getH()))]))
-    ));
-    Robot<ControllableVoxel> robot = new Robot<>(controller, voxels);
-    // set task
-    Settings settings = new Settings();
-    settings.setStepFrequency(1d / 30d);
-    Locomotion locomotion = new Locomotion(
-        60,
-        Locomotion.createTerrain("flat"),
-        Lists.newArrayList(Locomotion.Metric.TRAVEL_X_VELOCITY),
-        settings
-    );
-    // do task
-    List<Double> results = locomotion.apply(robot);
-    return results.get(0);
-}
-``` 
+`plot` contains several modules that can be run after an evolutionary experiment is complete to visually represent what behaviors were found. `plot_2d_map` is of most use to us, and is described in detail below.
 
-#### Optimization examples: optimize neural network weights
+`robotdescriptions` contains text files with voxel positions on individual lines that correspond to the shape of a desired 2d voxel-based robot. Each voxel is written as `x,y`, where x and y correspond to its position on an arbitrarily sized grid starting at 0,0. These robot description files are best understood by opening one in a text editor and viewing the contents.
 
-This example is similar to the one above, but here the controller of the robot is a *neural network* whose wights are subjected to optimization.
-Here the robot is a 7x4 biped with a 7x2 trunk and two 2x2 legs.
-The voxels have different sensors dependin on their position:
-- "feet" have touch sensors (whose signal is averaged in a 1 second time window)
-- "spine", i.e., the top-row of trunk have velocity (along the 2-axes) and average velocity sensors
-- the remaining voxels have an area ratio sensor
+## **afprobot** - amplitude, frequency, phase
 
-```java
-public static double assessOnLocomotion(double[] weights) {
-    // set robot shape and sensors
-    final Grid<Boolean> structure = Grid.create(7, 4, (x, y) -> (x < 2) || (x >= 5) || (y > 0));
-    Grid<SensingVoxel> voxels = Grid.create(structure.getW(), structure.getH(), (x, y) -> {
-      if (structure.get(x, y)) {
-        if (y > 2) {
-          return new SensingVoxel(Arrays.asList(
-              new Velocity(true, 3d, Velocity.Axis.X, Velocity.Axis.Y),
-              new Average(new Velocity(true, 3d, Velocity.Axis.X, Velocity.Axis.Y), 1d)
-          ));
-        }
-        if (y == 0) {
-          return new SensingVoxel(Arrays.asList(
-              new Average(new Touch(), 1d)
-          ));
-        }
-        return new SensingVoxel(Arrays.asList(
-            new AreaRatio()
-        ));
-      }
-      return null;
-    });
-    // set controller
-    CentralizedMLP controller = new CentralizedMLP(
-        voxels,
-        new int[]{100},
-        t -> 1d * Math.sin(-2d * Math.PI * t * 0.5d)
-    );
-    controller.setParams(weights);
-    Robot<SensingVoxel> robot = new Robot(controller, voxels);
-    // set task
-    Settings settings = new Settings();
-    settings.setStepFrequency(1d / 30d);
-    Locomotion locomotion = new Locomotion(
-        60,
-        Locomotion.createTerrain("flat"),
-        Lists.newArrayList(Locomotion.Metric.TRAVEL_X_VELOCITY),
-        settings
-    );
-    // do task
-    List<Double> results = locomotion.apply(robot);
-    return results.get(0);
-}
-```
+The `afprobot` type assigns different amplitude, frequency, and phase parameters for each voxel in each tested robot during evolution. This leads to a high parameter-space, since each voxel has 3 parameters to evolve on. The results from this experiment type are frequently less successful in terms of distance traveled due to the degree of complication. However, it is a good starting point to understand how all of the parameters can be controlled.
 
-## References
-1. Hiller, Lipson. "[Automatic design and manufacture of soft robots.](https://ieeexplore.ieee.org/abstract/document/6096440)" IEEE Transactions on Robotics 28.2 (2011): 457-466 
-2. Medvet, Bartoli, De Lorenzo, Seriani. "[Design, Validation, and Case Studies of 2D-VSR-Sim, an Optimization-friendly Simulator of 2-D Voxel-based Soft Robots](https://arxiv.org/abs/2001.08617)" arXiv cs.RO: 2001.08617
+### Usage
+
+***The modules used to run experiments for `2dsoro` expect to be called from a command line pointed at the pymap_elites folder. If the listed directory is different, first navigate to the pymap_elites folder before making any Python calls.***
+
+##### Evolution
+The first step in using `afprobot` is to run the evolutionary algorithm on the desired robot and terrain. The CLI call for this is:
+
+`python3 afprobot/afp_robot.py robots/[your_robot.txt] [terrain_descriptor] [starting_position] [simulation_time]`
+
+* `your_robot.txt` should be replaced with the text file describing the desired robot
+* `terrain_descriptor` is formatted to describe the terrain for a robot to walk on
+  * the string should be formatted in `x,y` pairs separated by colons `:` that describe elevation points to form a terrain with
+  * e.g. `1,0:1000,200:2000,100` describes a terrain with a hill with a steep increase and a more gradual decrease
+* `starting position` describes the starting x-position of the leftmost voxel on the robot; the starting y-position is determined by the terrain height at this point so that the robot starts right above the ground
+* `simulation_time` is the length of each simulation run in seconds of virtual time
+* for an example, run `python3 afprobot/afp_robot.py robots/example.txt 1,0:1000,200:2000,100 1000 30`
+
+When the evolutionary algorithm is finished, a number of `archive_xxx.dat` files will have been saved to the main folder, along with single `centroids_...` and `cvt.dat` files. These archives contain the parameters and results of "elite" simulation runs, and are ready to be tuned into videos.
+
+##### Videos
+Once the `archive` files are saved and `afp_robot.py` has terminated, video files of the elite behaviors found can be generated  using `make_videos.py` with the following CLI call:
+
+`python3 afprobot/make_videos.py robots/[your_robot.txt] [terrain_descriptor] [starting_position] [simulation_time] [archive_file]`
+* All `[parameters]` used (except `[archive_file]`) should be the same as what was used for the evolution call; if there are differences, the videos produced will not be accurate
+* `[archive_file]` can point to any one of the archives generated by the evolution, but generally the latest (highest-numbered) will have the most useful behaviors.
+  * If the videos are taking too long to process, or if some of the elites found are not of interest, a modified version of the archive file with only the interesting elites can be saved and used instead.
+
+Videos are saved in `.mov` format to the `pymap_elites` folder (for now).
+
+## **phasesrobot**
+The `phasesrobot` experiment type assigns only one frequency and amplitude to all of the voxels in a simulation run, but can assign different phases either to each voxel or to each column of voxels in a robot. These robots typically travel much further and present more stable behaviors due to their synced frequency. Note that frequency and amplitude are not held constant across multiple simulation runs; they can still be varied, but there is only one frequency and one amplitude parameter for the entire robot, reducing paramter-space significantly.
+
+### Usage
+
+***The modules used to run experiments for `2dsoro` expect to be called from a command line pointed at the pymap_elites folder. If the listed directory is different, first navigate to the pymap_elites folder before making any Python calls.***
+
+##### Evolution
+Running the evolutionary algorithm is largely similar to `afprobot` but with an extra argument:
+
+`python3 phasesrobot/phases_robot.py robots/[your_robot.txt] [terrain_descriptor] [starting_position] [simulation_time] [variance_type]`
+* `variance_type` describes whether each voxel in a robot should have its own phase, or whether voxels in the same column (same y-value in description) should have the same phase. The two options are:
+  * `by_voxel` - 1 phase/voxel
+  * `by_column` - 1 phase/column of voxels
+* All other arguments function in the same way as they do for `afp_robot`, described above.
+
+##### Videos:
+Creating videos of the results works similarly to `afprobot` as well, requiring the same input arguments as were used in the evolutionary algorithm call as well as the desired archive file:
+
+`python3 phasesrobot/make_videos_phases.py robots/[your_robot.txt] [terrain_descriptor] [starting_position] [simulation_time] [variance_type] [archive_file]`
+* This works identically to the videos call in `afprobot`, but adds the `[variance_type]` as an input argument before the archive file.
+
+## **plot**
+Plot offers several methods of visualizing evolutionary results, but the most useful is `plot_2d_map`.
+
+### plot_2d_map
+`plot_2d_map.py` produces .png and .pdf outputs of a map displaying the elite behaviors found by evolution.
+##### Usage
+***The modules used to run experiments for `2dsoro` expect to be called from a command line pointed at the pymap_elites folder. If the listed directory is different, first navigate to the pymap_elites folder before making any Python calls.***
+
+`plot_2d_map` is called quite simply:
+
+`python3 plot/plot_2d_map.py [centroids_file] [archive_file]`
+* `[centroids_file]` is produced by running an evolution, and should be found in the main pymap_elites folder named something like "centroids_50_2.dat"
+* `[archive_file]` is the same as would be used to make videos; located in pymap_elites, with the highest numbered (e.g. "archive_500.dat") being the most recent.
+
+Producing plots this way allows the researcher to see which specific niches were filled in the course of a given evolutioanry experiment.
+
+
+
+## **Citations**
+1. Medvet, Bartoli, De Lorenzo, Seriani. "[Design, Validation, and Case Studies of 2D-VSR-Sim, an Optimization-friendly Simulator of 2-D Voxel-based Soft Robots](https://arxiv.org/abs/2001.08617)" arXiv cs.RO: 2001.08617
+2. Mouret JB, Clune J. Illuminating search spaces by mapping elites. arXiv preprint arXiv:1504.04909. 2015 Apr 20.
+3. Vassiliades V, Chatzilygeroudis K, Mouret JB. Using centroidal voronoi tessellations to scale up the multi-dimensional archive of phenotypic elites algorithm. IEEE Transactions on Evolutionary Computation. 2017 Aug 3.
+4. Vassiliades V, Mouret JB. Discovering the Elite Hypervolume by Leveraging Interspecies Correlation. Proc. of GECCO. 2018.
+5. Mouret JB, Maguire G. Quality Diversity for Multi-task Optimization. Proc of GECCO. 2020.
